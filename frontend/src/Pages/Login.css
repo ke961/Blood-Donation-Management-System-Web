@@ -111,3 +111,17 @@ body{
     text-decoration:none;
 
 }
+
+.login-error {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 7px;
+  background-color: #ffe5e5;
+  color: #b00020;
+  text-align: center;
+}
+
+.login-card button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
