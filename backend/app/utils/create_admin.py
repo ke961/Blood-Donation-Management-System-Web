@@ -7,12 +7,15 @@ def create_admin(db: Session):
     admin = db.query(User).filter(User.email == "admin@gmail.com").first()
 
     if not admin:
-
         admin = User(
             full_name="Admin",
             email="admin@gmail.com",
             password=hash_password("admin123"),
-            role="admin"
+            role="admin",
+            phone="01700000000",
+            blood_group="O+",
+            gender="Male",
+            address="Dhaka"
         )
 
         db.add(admin)
