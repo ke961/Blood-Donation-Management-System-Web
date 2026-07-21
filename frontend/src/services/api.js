@@ -103,7 +103,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://blood-donation-management-system-web.onrender.com",
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    "http://127.0.0.1:8000",
   headers: {
     "Content-Type": "application/json",
   },
