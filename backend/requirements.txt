@@ -9,13 +9,14 @@
 
 
 fastapi
-uvicorn[standard]
+uvicorn
+gunicorn
 sqlalchemy
-pydantic
-python-jose[cryptography]
 passlib[bcrypt]
 bcrypt==4.0.1
+python-jose
 python-multipart
 email-validator
+pydantic
 psycopg2-binary
-gunicorn
+python-dotenv
