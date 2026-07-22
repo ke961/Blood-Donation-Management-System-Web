@@ -79,7 +79,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5175",
-        "https://blood-donation-management-system-we.vercel.app",
+        "https://blood-donation-management-system-3uzvwe4go.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
