@@ -178,11 +178,18 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
+
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+print("SECRET_KEY =", SECRET_KEY)
+print(type(SECRET_KEY))
+
 
 
 pwd_context = CryptContext(
