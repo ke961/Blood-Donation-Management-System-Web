@@ -1,1 +1,30 @@
+# User Stories Specification
 
+## 1. Authentication & Security User Stories
+- **US-01 (User Registration):** As a new **Donor** or **Patient**, I want to create an account with my full name, email, password, phone, blood group, gender, and address, so that I can access personalized features.
+- **US-02 (User Login):** As a registered **User (Admin, Donor, Patient)**, I want to securely log in with my email and password to receive a JWT access token for session management.
+- **US-03 (Role-Based Redirection):** As a logged-in **User**, I want the application to automatically redirect me to my role-specific dashboard (`/admin/dashboard`, `/donor/dashboard`, or `/patient/dashboard`).
+
+---
+
+## 2. Admin User Stories
+- **US-04 (Admin Analytics Dashboard):** As an **Admin**, I want to view a real-time summary of total users, donors, patients, pending requests, assigned donations, and completed transfusions.
+- **US-05 (User Management):** As an **Admin**, I want to list, update roles, or delete user accounts so that I can maintain system integrity.
+- **US-06 (Emergency Request Creation):** As an **Admin**, I want to post emergency blood requests directly on behalf of partner hospitals.
+- **US-07 (Donation Record Management):** As an **Admin**, I want to view all donation commitments, update donation fulfillment status to `Completed`, or delete obsolete records.
+
+---
+
+## 3. Donor User Stories
+- **US-08 (Donor Overview & Stats):** As a **Donor**, I want to see my blood group, matching urgent requests count, and personal donation history summary.
+- **US-09 (Availability Toggle):** As a **Donor**, I want to toggle my availability status (`Available to Donate` / `Unavailable`) with one click so that hospitals know when I am ready.
+- **US-10 (Explore Matching Requests):** As a **Donor**, I want to filter live blood requests matching my specific blood group so that I can quickly volunteer.
+- **US-11 (Volunteer Donation):** As a **Donor**, I want to click `Volunteer to Donate` on a blood request to commit my donation to the patient.
+- **US-12 (My Donations History):** As a **Donor**, I want to view my past and pending donation commitments and mark them as completed upon donation.
+
+---
+
+## 4. Patient User Stories
+- **US-13 (Patient Request Submission):** As a **Patient**, I want to submit a blood request detailing patient name, contact number, blood group required, hospital name, units needed, and urgency level (`Normal`, `Urgent`, `Critical`).
+- **US-14 (Request Real-Time Tracking):** As a **Patient**, I want to monitor the real-time status of my submitted blood requests (`Pending`, `Approved`, `Assigned`, `Completed`).
+- **US-15 (Explore Active Donors):** As a **Patient**, I want to view a searchable list of registered voluntary donors matching my required blood type to facilitate quick outreach.

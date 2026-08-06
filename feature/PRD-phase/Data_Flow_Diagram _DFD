@@ -1,1 +1,45 @@
+# Data Flow Diagrams (DFD)
 
+## Level 0 Context Diagram (System Level)
+
+```mermaid
+graph TD
+    User1[Donor Persona] -->|Register / Toggle Availability / Volunteer| System((Blood Donation Management System))
+    User2[Patient Persona] -->|Submit Request / Search Donors| System
+    User3[Admin Persona] -->|Manage Users / Assign Donors / Audit Logs| System
+    System -->|Matching Requests / Notifications| User1
+    System -->|Request Fulfillment Status| User2
+    System -->|System Metrics & Audit Data| User3
+```
+
+---
+
+## Level 1 Process Diagram (Component Level)
+
+```mermaid
+graph TD
+    subgraph Frontend Client
+        ReactApp[React SPA Router]
+    end
+
+    subgraph FastAPI REST Backend
+        AuthService[Auth Router /auth]
+        AdminService[Admin Router /admin]
+        DonorService[Donor Router /donor]
+        PatientService[Patient Router /patient]
+    end
+
+    subgraph Data Layer
+        SQLiteDB[(SQLite Database - blood_donation.db)]
+    end
+
+    ReactApp -->|POST /auth/login| AuthService
+    ReactApp -->|GET/PUT /donor/dashboard| DonorService
+    ReactApp -->|GET/POST /patient/requests| PatientService
+    ReactApp -->|GET/PUT/DELETE /admin/*| AdminService
+
+    AuthService -->|Read/Write Users| SQLiteDB
+    DonorService -->|Read/Write Donations & Status| SQLiteDB
+    PatientService -->|Create Blood Requests| SQLiteDB
+    AdminService -->|Aggregate Metrics & Full CRUD| SQLiteDB
+```

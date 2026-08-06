@@ -1,1 +1,35 @@
+# Acceptance Criteria Specification (BDD / Given-When-Then)
 
+## Feature 1: User Registration & Authentication
+### Scenario 1.1: Successful Donor Registration
+- **Given** an unauthenticated visitor on the registration page (`/register`),
+- **When** they fill in valid details (Full Name, Email, Phone, Blood Group, Gender, Address, Role: `donor`, Password),
+- **And** click `Register`,
+- **Then** a new user record with hashed password and role `donor` is created,
+- **And** the UI shows "Registration successful! Redirecting to login..." and redirects to `/login`.
+
+### Scenario 1.2: Authentication and Role-Based Routing
+- **Given** a registered user with role `patient`,
+- **When** they enter valid login credentials at `/login`,
+- **Then** the backend returns a JWT Bearer Token containing `user_id`, `email`, and `role`,
+- **And** the frontend stores the token in `localStorage`,
+- **And** automatically routes the user to `/patient/dashboard`.
+
+---
+
+## Feature 2: Donor Availability & Volunteer Workflow
+### Scenario 2.1: Toggling Donor Availability
+- **Given** an authenticated donor on `/donor/dashboard`,
+- **When** they click the `Availability Badge`,
+- **Then** the backend executes `PUT /donor/availability?is_available={new_status}`,
+- **And** updates `users.is_available` in the database,
+- **And** the badge UI immediately toggles between `● Available to Donate` and `○ Currently Unavailable`.
+
+---
+
+## Feature 3: Patient Blood Request Lifecycle
+### Scenario 3.1: Submitting a Request
+- **Given** an authenticated patient on `/patient/dashboard`,
+- **When** they fill out the blood request form with `O+` blood type, hospital location, and `Critical` urgency,
+- **Then** `POST /patient/requests` creates a request with status `Pending`,
+- **And** the request appears instantly on the Patient Dashboard table and Donor Portal matching requests.

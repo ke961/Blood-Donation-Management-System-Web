@@ -3,6 +3,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Boolean
 
 from sqlalchemy.orm import relationship
 
@@ -33,6 +34,8 @@ class User(Base):
 
     address = Column(String)
 
+    is_available = Column(Boolean, default=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -42,13 +45,19 @@ class BloodRequest(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    patient_id = Column(Integer, ForeignKey("users.id"))
+    patient_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    patient_name = Column(String, nullable=True)
+
+    contact_number = Column(String, nullable=True)
 
     blood_group = Column(String)
 
     hospital = Column(String)
 
     quantity = Column(Integer)
+
+    urgency = Column(String, default="Normal")
 
     status = Column(String, default="Pending")
 
@@ -69,7 +78,7 @@ class Donation(Base):
 
     donation_date = Column(DateTime, default=datetime.utcnow)
 
-    status = Column(String, default="Completed")
+    status = Column(String, default="Pending")
 
     donor = relationship("User")
 
