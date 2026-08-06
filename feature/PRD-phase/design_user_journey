@@ -1,1 +1,50 @@
+# Design User Journeys
 
+## 1. Donor User Journey Flow
+
+```mermaid
+flowchart TD
+    A[Visitor Lands on Home Page] --> B{Choose Action}
+    B -->|New Donor| C[Click Register]
+    B -->|Existing Donor| D[Click Login]
+    C --> E[Submit Registration Form as Donor]
+    E --> D
+    D --> F[Authenticate with Email & Password]
+    F --> G[Redirect to Donor Portal /donor/dashboard]
+    G --> H{Donor Actions}
+    H --> I[Toggle Live Availability Status]
+    H --> J[Browse Matching Urgent Blood Requests]
+    H --> K[Volunteer to Donate for Request]
+    H --> L[Update Personal Profile]
+    K --> M[Donation Record Created - Pending Status]
+    M --> N[Mark Donation as Completed upon Fulfillment]
+```
+
+---
+
+## 2. Patient User Journey Flow
+
+```mermaid
+flowchart TD
+    P1[Patient Lands on Home Page] --> P2[Register / Login as Patient]
+    P2 --> P3[Redirect to Patient Care Hub /patient/dashboard]
+    P3 --> P4{Patient Actions}
+    P4 --> P5[Post Emergency Blood Request]
+    P4 --> P6[Track Request Status: Pending -> Assigned -> Completed]
+    P4 --> P7[View Active Donors by Blood Group]
+    P5 --> P8[Request Broadcasted to Matching Donors & Admin]
+```
+
+---
+
+## 3. Administrator User Journey Flow
+
+```mermaid
+flowchart TD
+    A1[Admin Logs in at /login] --> A2[Redirect to Admin Control Center /admin/dashboard]
+    A2 --> A3{Admin Control Tabs}
+    A3 --> A4[System Analytics Overview]
+    A3 --> A5[User Management: View / Promote Role / Delete User]
+    A3 --> A6[Blood Requests Management: Approve / Reject / Delete]
+    A3 --> A7[Donation Records Management: Update Status / Complete]
+```

@@ -1,122 +1,75 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-from app.database import get_db
-from app import models
-from app.schemas import BloodRequestCreate
+from ..auth import get_current_user
+from ..database import get_db
+from ..models import BloodRequest
+from ..schemas import BloodRequestCreate
 
 router = APIRouter(
     prefix="/patient",
-    tags=["Patient"]
+    tags=["Patient"],
 )
 
 
-# =====================================
-# Patient Dashboard
-# =====================================
-
 @router.get("/dashboard")
-def patient_dashboard():
+def patient_dashboard(
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    patient_id = current_user.get("user_id")
+    my_requests = db.query(BloodRequest).filter(BloodRequest.patient_id == patient_id).all()
 
     return {
-        "message": "Welcome Patient",
-        "features": [
-            "Profile",
-            "Request Blood",
-            "Request History"
-        ]
+        "message": "Patient dashboard is working",
+        "user": current_user,
+        "total_requests": len(my_requests),
     }
 
 
-# =====================================
-# View Profile
-# =====================================
-
-@router.get("/profile/{user_id}")
-def get_profile(
-    user_id: int,
-    db: Session = Depends(get_db)
+@router.get("/requests")
+def get_patient_requests(
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
+    patient_id = current_user.get("user_id")
+    requests = (
+        db.query(BloodRequest)
+        .filter(BloodRequest.patient_id == patient_id)
+        .order_by(BloodRequest.created_at.desc())
+        .all()
+    )
 
-    patient = db.query(models.User).filter(
-        models.User.id == user_id,
-        models.User.role == "patient"
-    ).first()
+    return [
+        {
+            "id": r.id,
+            "blood_group": r.blood_group,
+            "hospital": r.hospital,
+            "quantity": r.quantity,
+            "urgency": r.urgency or "Normal",
+            "status": r.status,
+            "created_at": r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else None,
+        }
+        for r in requests
+    ]
 
-    if not patient:
-        raise HTTPException(
-            status_code=404,
-            detail="Patient not found"
-        )
 
-    return patient
-
-
-# =====================================
-# Update Profile
-# =====================================
-
-@router.put("/profile/{user_id}")
-def update_profile(
-    user_id: int,
-    full_name: str,
-    phone: str,
-    address: str,
-    db: Session = Depends(get_db)
+@router.post("/requests")
+def create_patient_request(
+    request_data: BloodRequestCreate,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
+    patient_id = current_user.get("user_id")
 
-    patient = db.query(models.User).filter(
-        models.User.id == user_id,
-        models.User.role == "patient"
-    ).first()
-
-    if not patient:
-        raise HTTPException(
-            status_code=404,
-            detail="Patient not found"
-        )
-
-    patient.full_name = full_name
-    patient.phone = phone
-    patient.address = address
-
-    db.commit()
-    db.refresh(patient)
-
-    return {
-        "message": "Profile Updated",
-        "data": patient
-    }
-
-
-# =====================================
-# Request Blood
-# =====================================
-
-@router.post("/request/{patient_id}")
-def create_request(
-    patient_id: int,
-    request: BloodRequestCreate,
-    db: Session = Depends(get_db)
-):
-
-    patient = db.query(models.User).filter(
-        models.User.id == patient_id,
-        models.User.role == "patient"
-    ).first()
-
-    if not patient:
-        raise HTTPException(
-            status_code=404,
-            detail="Patient not found"
-        )
-
-    new_request = models.BloodRequest(
-        patient_id=patient.id,
-        blood_group=request.blood_group,
-        hospital=request.hospital,
-        quantity=request.quantity,
-        status="Pending"
+    new_request = BloodRequest(
+        patient_id=patient_id,
+        patient_name=request_data.patient_name,
+        contact_number=request_data.contact_number,
+        blood_group=request_data.blood_group,
+        hospital=request_data.hospital,
+        quantity=request_data.quantity,
+        urgency=request_data.urgency or "Normal",
+        status="Pending",
     )
 
     db.add(new_request)
@@ -124,80 +77,12 @@ def create_request(
     db.refresh(new_request)
 
     return {
-        "message": "Blood Request Submitted",
-        "request": new_request
+        "message": "Blood request submitted successfully",
+        "request": {
+            "id": new_request.id,
+            "blood_group": new_request.blood_group,
+            "hospital": new_request.hospital,
+            "quantity": new_request.quantity,
+            "status": new_request.status,
+        },
     }
-
-
-# =====================================
-# Request History
-# =====================================
-
-@router.get("/history/{patient_id}")
-def request_history(
-    patient_id: int,
-    db: Session = Depends(get_db)
-):
-
-    history = db.query(models.BloodRequest).filter(
-        models.BloodRequest.patient_id == patient_id
-    ).all()
-
-    return history
-
-
-# =====================================
-# Cancel Request
-# =====================================
-
-@router.delete("/request/{request_id}")
-def cancel_request(
-    request_id: int,
-    db: Session = Depends(get_db)
-):
-
-    request = db.query(models.BloodRequest).filter(
-        models.BloodRequest.id == request_id
-    ).first()
-
-    if not request:
-        raise HTTPException(
-            status_code=404,
-            detail="Request not found"
-        )
-
-    if request.status == "Completed":
-        raise HTTPException(
-            status_code=400,
-            detail="Completed request cannot be cancelled."
-        )
-
-    db.delete(request)
-    db.commit()
-
-    return {
-        "message": "Blood Request Cancelled Successfully"
-    }
-
-
-# =====================================
-# View Single Request
-# =====================================
-
-@router.get("/request/{request_id}")
-def view_request(
-    request_id: int,
-    db: Session = Depends(get_db)
-):
-
-    request = db.query(models.BloodRequest).filter(
-        models.BloodRequest.id == request_id
-    ).first()
-
-    if not request:
-        raise HTTPException(
-            status_code=404,
-            detail="Request not found"
-        )
-
-    return request

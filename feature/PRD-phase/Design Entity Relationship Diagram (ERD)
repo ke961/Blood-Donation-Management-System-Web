@@ -1,1 +1,45 @@
+# Entity Relationship Diagram (ERD)
 
+## Database Schema & Relationships
+
+```mermaid
+erDiagram
+    USERS ||--o{ BLOOD_REQUESTS : "posts (as Patient)"
+    USERS ||--o{ DONATIONS : "volunteers (as Donor)"
+    BLOOD_REQUESTS ||--o{ DONATIONS : "fulfilled by"
+
+    USERS {
+        int id PK
+        string full_name
+        string email UK
+        string password
+        string role "admin | donor | patient"
+        string phone
+        string blood_group
+        string gender
+        string address
+        boolean is_available
+        datetime created_at
+    }
+
+    BLOOD_REQUESTS {
+        int id PK
+        int patient_id FK
+        string patient_name
+        string contact_number
+        string blood_group
+        string hospital
+        int quantity
+        string urgency "Normal | Urgent | Critical"
+        string status "Pending | Approved | Assigned | Completed | Cancelled"
+        datetime created_at
+    }
+
+    DONATIONS {
+        int id PK
+        int donor_id FK
+        int request_id FK
+        datetime donation_date
+        string status "Pending | Completed | Cancelled"
+    }
+```

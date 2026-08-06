@@ -45,12 +45,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .database import engine, SessionLocal
 from .models import Base
-
-from .routers import auth
-from .routers import admin
-from .routers import donor
-from .routers import patient
-
+from .routers import admin, auth, donor, patient
 from .utils.create_admin import create_admin
 
 
@@ -73,14 +68,11 @@ app = FastAPI(
 #     allow_methods=["*"],
 #     allow_headers=["*"],
 # )
+from sqlalchemy import inspect, text
+
 app.add_middleware(
     CORSMiddleware,
-    
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5175",
-        "https://blood-donation-management-system-3uzvwe4go.vercel.app",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -88,6 +80,15 @@ app.add_middleware(
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Auto-migrate missing columns for existing SQLite DBs
+with engine.connect() as conn:
+    inspector = inspect(engine)
+    if "users" in inspector.get_table_names():
+        columns = [c["name"] for c in inspector.get_columns("users")]
+        if "is_available" not in columns:
+            conn.execute(text("ALTER TABLE users ADD COLUMN is_available BOOLEAN DEFAULT 1"))
+            conn.commit()
 
 
 # Automatically create Admin account
@@ -110,4 +111,4 @@ app.include_router(patient.router)
 def root():
     return {
         "message": "Blood Donation Management System API"
-    }
+    }
