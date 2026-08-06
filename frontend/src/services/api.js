@@ -129,11 +129,21 @@
 
 import axios from "axios";
 
-const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://blood-donation-management-system-web.onrender.com/",
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ) {
+    return "http://127.0.0.1:8000";
+  }
+  return "https://blood-donation-management-system-web.onrender.com";
+};
 
+const api = axios.create({
+  baseURL: getBaseURL(),
   headers: {
     "Content-Type": "application/json",
   },
@@ -149,4 +159,4 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default api;
+export default api;

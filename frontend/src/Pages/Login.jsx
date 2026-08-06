@@ -88,7 +88,6 @@
 // export default Login;
 
 
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -138,8 +137,14 @@ function Login() {
         setErrorMessage("Invalid user role.");
       }
     } catch (error) {
+      console.error("Login error:", error);
+      console.error("Backend response:", error.response?.data);
+      console.error("Status code:", error.response?.status);
+
+
       setErrorMessage(
         error.response?.data?.detail ||
+        error.message ||
           "Login failed. Please check your email and password."
       );
     } finally {

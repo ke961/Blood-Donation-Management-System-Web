@@ -111,66 +111,72 @@ code {
 } */
 
 
-
-
+/* Global Design Tokens for Unified Theme */
 :root {
-  font-family: Arial, Helvetica, sans-serif;
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Color Palette */
+  --primary: #dc2626;
+  --primary-hover: #b91c1c;
+  --primary-dark: #991b1b;
+  --primary-light: #fee2e2;
+
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+
+  --text-heading: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+
+  --header-bg: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+
+  font-family: var(--font-body);
   line-height: 1.5;
-  font-weight: 400;
-
-  color: #333333;
-  background-color: #f4f6f9;
-
-  font-synthesis: none;
+  color: var(--text-body);
+  background-color: var(--bg-main);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100%;
   margin: 0;
   padding: 0;
 }
 
-body {
-  min-width: 320px;
-  background-color: #f4f6f9;
-}
-
-/* Remove Vite's fixed width and centered text */
-#root {
+html, body, #root {
   width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-main);
 }
 
-/* Basic headings */
-h1,
-h2,
-h3,
-h4,
-p {
-  margin-top: 0;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
 }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
+button, input, select, textarea {
+  font-family: var(--font-body);
 }
 
 button {
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 a {
   text-decoration: none;
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--primary-hover);
 }
