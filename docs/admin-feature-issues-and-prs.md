@@ -114,5 +114,6 @@ Added complete backend API endpoints, authentication security middleware, and da
 - Verified CORS middleware for frontend API integration.
 - Tested admin JWT authentication and endpoint responses.
 
-Closes #2
+Closes #3
 ```
+
