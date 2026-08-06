@@ -1,8 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
+from pathlib import Path
 
-DATABASE_URL = "sqlite:///./blood_donation.db"
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+DB_PATH = BACKEND_DIR / "blood_donation.db"
+
+DATABASE_URL = f"sqlite:///{DB_PATH.as_posix()}"
+
 
 engine = create_engine(
     DATABASE_URL,
@@ -20,6 +26,7 @@ Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
+
     try:
         yield db
     finally:

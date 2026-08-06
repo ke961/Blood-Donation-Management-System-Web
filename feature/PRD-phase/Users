@@ -1,1 +1,60 @@
+# User Personas & Role Specifications
 
+## 1. System Roles Overview
+The Blood Donation Management System supports three distinct user personas, each tailored with specific permissions, workflows, and responsibilities.
+
+---
+
+## 2. User Roles & Personas
+
+### A. System Administrator (Admin)
+- **Role Identifier:** `admin`
+- **Description:** System overseer responsible for supervising all blood requests, donor pools, patient registrations, and emergency allocations.
+- **Key Responsibilities:**
+  - View high-level system analytics (total users, donors, patients, pending & completed requests).
+  - Manage user accounts (promote/demote roles, delete inactive or rule-violating accounts).
+  - Create and approve emergency blood requests on behalf of hospitals.
+  - Manually assign available donors to high-urgency blood requests.
+  - Monitor and update donation fulfillment records.
+- **Authentication Access:** JWT Bearer Token with `admin` scope.
+
+---
+
+### B. Voluntary Blood Donor (Donor)
+- **Role Identifier:** `donor`
+- **Description:** Registered individual willing to voluntarily donate blood for emergency and regular hospital requests.
+- **Key Responsibilities:**
+  - Maintain personal profile (blood group, phone number, address, gender).
+  - Toggle live donation availability (`Available to Donate` vs `Currently Unavailable`).
+  - Browse emergency and matching blood requests filtered by blood group.
+  - Volunteer to donate for urgent patient requests.
+  - Update donation commitment status (`Pending`, `Completed`, `Cancelled`).
+- **Authentication Access:** JWT Bearer Token with `donor` or `admin` scope.
+
+---
+
+### C. Patient / Caregiver (Patient)
+- **Role Identifier:** `patient`
+- **Description:** Individual or hospital caregiver seeking emergency blood transfusions.
+- **Key Responsibilities:**
+  - Submit detailed emergency blood requests (patient name, contact, hospital address, required units, urgency level).
+  - Track real-time fulfillment status of submitted blood requests (`Pending`, `Approved`, `Assigned`, `Completed`).
+  - Search and filter registered blood donors matching required blood types.
+  - Contact matched voluntary donors or hospital staff.
+- **Authentication Access:** JWT Bearer Token with `patient` or `admin` scope.
+
+---
+
+## 3. Access Control Matrix
+
+| Feature / Action | Admin | Donor | Patient |
+| :--- | :---: | :---: | :---: |
+| Account Registration | ❌ (Pre-seeded) | ✅ | ✅ |
+| Account Login & Token Auth | ✅ | ✅ | ✅ |
+| View System Dashboard Analytics | ✅ | ❌ | ❌ |
+| Manage User Roles & Accounts | ✅ | ❌ | ❌ |
+| Toggle Personal Availability | ❌ | ✅ | ❌ |
+| View Live Matching Blood Requests | ✅ | ✅ | ✅ (Own requests) |
+| Volunteer for Blood Donation | ❌ | ✅ | ❌ |
+| Create Emergency Blood Request | ✅ | ❌ | ✅ |
+| Track Request Fulfillment | ✅ | ✅ | ✅ |

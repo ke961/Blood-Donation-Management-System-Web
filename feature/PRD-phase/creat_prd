@@ -1,1 +1,27 @@
+# Product Requirement Document (PRD)
 
+## 1. Executive Summary
+The **Blood Donation Management System (LifeFlow)** is an end-to-end web platform designed to streamline emergency blood request creation, voluntary donor discovery, real-time donation assignment, and administrative oversight across hospitals and community health systems.
+
+---
+
+## 2. Product Objectives & Vision
+- **Zero-Delay Emergency Transfusions:** Enable patients and hospitals to broadcast urgent blood requirements in seconds.
+- **Role-Gated Dashboard Security:** Provide custom workflows tailored to **Admins**, **Donors**, and **Patients**.
+- **Transparent Fulfillment Tracking:** Give patients and hospital staff real-time updates on donation lifecycle states (`Pending` -> `Assigned` -> `Completed`).
+
+---
+
+## 3. Technology Stack & Architecture
+- **Backend API:** FastAPI (Python 3.11) with SQLAlchemy ORM and SQLite Database.
+- **Frontend SPA:** React with Vite, React Router DOM, and custom CSS design system.
+- **Authentication:** JWT (JSON Web Tokens) with HTTP Bearer Bearer Security.
+- **Deployment:** Render / Vercel ready.
+
+---
+
+## 4. Key Feature Specification Summary
+1. **Multi-Role Authentication System:** User registration for Donors & Patients, secure login, role-based JWT payload decoding, and route guards.
+2. **Donor Hero Portal:** Single-click availability toggling, matched blood request discovery, voluntary donation commitment, and history tracking.
+3. **Patient Care Portal:** Request submission form with urgency tagging (`Normal`, `Urgent`, `Critical`), real-time request tracking, and searchable donor directory.
+4. **Admin Control Center:** Metrics aggregation, full user management, request creation, status overrides, and donation verification.

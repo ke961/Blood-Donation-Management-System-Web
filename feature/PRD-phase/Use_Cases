@@ -1,1 +1,39 @@
+# Use Cases Specification
 
+## UC-01: Patient Submits Emergency Blood Request
+- **Actor:** Patient / Caregiver
+- **Pre-conditions:** Patient is authenticated with `patient` role token.
+- **Main Flow:**
+  1. Patient navigates to Patient Care Portal (`/patient/dashboard`).
+  2. Patient selects `➕ Post New Request` tab.
+  3. Patient fills in Patient Name, Contact Number, Blood Group, Hospital Name & Address, Units needed, and Urgency Level.
+  4. Patient submits the form.
+  5. Backend validates request schema, sets initial status to `Pending`, and persists to `blood_requests` table.
+  6. UI displays success toast and updates the live request list.
+- **Alternative Flow:**
+  - If required fields are missing, frontend displays validation error message.
+
+---
+
+## UC-02: Donor Volunteers for Matching Request
+- **Actor:** Voluntary Donor
+- **Pre-conditions:** Donor is authenticated with `donor` role token and `is_available` is `True`.
+- **Main Flow:**
+  1. Donor accesses Donor Portal (`/donor/dashboard`).
+  2. Donor clicks `Available Requests` tab.
+  3. System highlights requests matching donor's blood group (`⭐ Matches Your Blood Group`).
+  4. Donor clicks `Volunteer to Donate`.
+  5. Backend verifies donor has not already volunteered, creates a `donations` record with status `Pending`, and updates `blood_requests` status to `Assigned`.
+  6. System alerts donor with thank-you confirmation and updates donation counter.
+
+---
+
+## UC-03: Admin Manages Users and Overrides Request Fulfillment
+- **Actor:** System Administrator
+- **Pre-conditions:** Admin is logged in with `admin` JWT scope.
+- **Main Flow:**
+  1. Admin opens Admin Dashboard (`/admin/dashboard`).
+  2. Admin selects `👥 User Management` tab to view user list.
+  3. Admin can update user role (`donor`, `patient`, `admin`) or delete invalid accounts.
+  4. Admin selects `🤝 Donation Records` tab and marks a pending donation as `Completed` upon hospital confirmation.
+  5. System updates both `donations` status and associated `blood_requests` status to `Completed`.
