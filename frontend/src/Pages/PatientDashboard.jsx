@@ -69,7 +69,7 @@ function PatientDashboard() {
       const res = await api.get("/patient/requests");
       setMyRequests(res.data);
     } catch (err) {
-      showAlert("Failed to load blood requests.", "error");
+      showAlert("Failed to load the  blood requests.", "error");
     }
   };
 
