@@ -36,7 +36,7 @@ jobs:
         run: npm run build
 
   # -------------------------------------------------------------
-  # JOB 2: Test Backend (FastAPI + Python)
+  # JOB 2: Test Backend API (FastAPI + Python)
   # -------------------------------------------------------------
   test-backend:
     name: Test Backend API
@@ -59,7 +59,33 @@ jobs:
           pip install -r requirements.txt
 
   # -------------------------------------------------------------
-  # JOB 3: Deploy Backend to Render (Triggers Render Deploy Hook)
+  # JOB 3: Deploy Frontend to Vercel
+  # -------------------------------------------------------------
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    needs: [test-frontend, test-backend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN_VAL: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy Frontend
+        run: |
+          if [ -n "$VERCEL_TOKEN_VAL" ]; then
+            echo "Deploying Frontend to Vercel CLI..."
+            npm install --global vercel@latest
+            vercel pull --yes --environment=production --token=$VERCEL_TOKEN_VAL
+            vercel build --prod --token=$VERCEL_TOKEN_VAL
+            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN_VAL
+          else
+            echo "Vercel auto-deploys frontend from main branch."
+          fi
+
+  # -------------------------------------------------------------
+  # JOB 4: Deploy Backend to Render
   # -------------------------------------------------------------
   deploy-backend:
     name: Deploy Backend to Render
@@ -67,13 +93,13 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
-      RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      RENDER_HOOK_VAL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - name: Trigger Render Deployment
         run: |
-          if [ -n "$RENDER_HOOK" ]; then
+          if [ -n "$RENDER_HOOK_VAL" ]; then
             echo "Triggering Render Deploy Hook..."
-            curl -s -f -X POST "$RENDER_HOOK"
+            curl -s -f -X POST "$RENDER_HOOK_VAL"
           else
-            echo "No RENDER_DEPLOY_HOOK_URL secret set. Render will auto-deploy from main."
+            echo "Render auto-deploys backend from main branch."
           fi
