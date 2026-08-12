@@ -1,12 +1,13 @@
-# 🩸 LifeFlow - Blood Donation Management System
+# 🩸 LifeFlow - Emergency Blood Donation Management System
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![React](https://img.shields.io/badge/Frontend-React%2019%20%7C%20Vite%208-blue.svg)
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)
-![SQLite](https://img.shields.io/badge/Database-SQLite-003B57.svg)
+![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20SQLAlchemy-003B57.svg)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> **LifeFlow** is a modern, full-stack emergency blood donation management platform designed to connect voluntary blood donors, patients in critical need, and hospital administrators in real time.
+> **LifeFlow** is a modern, full-stack emergency blood donation management platform built to connect voluntary blood donors, patients requiring urgent transfusions, and hospital administrators in real time.
 
 ---
 
@@ -18,25 +19,25 @@
 
 ---
 
-## 🎯 Key User Roles & Feature Portals
+## 🎯 Key User Portals & Features
 
-The system provides custom role-gated interfaces for three distinct personas:
+The platform provides custom role-gated interfaces for three distinct personas:
 
 ### 1. 🛡️ System Administrator (Admin Portal)
-- **Real-time Analytics Overview:** View high-level metrics for total users, registered donors, patients, request statuses (`Pending`, `Approved`, `Assigned`, `Completed`), and donation counts.
-- **User Management:** Full account management, role switching (`Admin`, `Donor`, `Patient`), and account deletion.
-- **Blood Request Controls:** Create emergency hospital requests and manage request fulfillment states.
-- **Donation Audit Records:** Monitor donor volunteer commitments and mark transfusions as completed.
+- **Real-time Analytics Overview:** Monitor system metrics for total users, registered donors, patient count, donation stats, and blood request statuses (`Pending`, `Approved`, `Assigned`, `Completed`).
+- **User Account Management:** Full user account control, including role switching (`Admin`, `Donor`, `Patient`) and account deletion with cascade handling.
+- **Emergency Request Management:** Create hospital emergency requests manually and update request fulfillment states.
+- **Donation Audit Records:** Monitor donor volunteer commitments and verify completed transfusions.
 
 ### 2. ❤️ Voluntary Donor (Donor Portal)
-- **Live Availability Toggle:** One-click status switch (`Available to Donate` vs `Currently Unavailable`).
+- **Live Availability Toggle:** One-click availability switch (`Available to Donate` vs `Currently Unavailable`).
 - **Matched Request Discovery:** Automatic blood group matching highlight (`⭐ Matches Your Blood Group`).
-- **Volunteer Workflow:** Single-click commitment to volunteer for active hospital requests.
-- **Donation History:** Track past and pending donation commitments.
+- **Volunteer Workflow:** Single-click volunteer commitment for active hospital requests.
+- **Donation History:** Track past and active donation commitments.
 
 ### 3. 🩸 Patient Care Hub (Patient Portal)
-- **Emergency Request Posting:** Submit blood requests with hospital address, required units, and urgency levels (`Normal`, `Urgent`, `Critical`).
-- **Fulfillment Tracking:** Monitor real-time status updates (`Pending` -> `Approved` -> `Assigned` -> `Completed`).
+- **Emergency Request Submission:** Submit blood requests specifying hospital name/address, required blood group, units needed, city, contact number, and urgency level (`Normal`, `Urgent`, `Critical`).
+- **Fulfillment Lifecycle Tracking:** Real-time tracking of request status (`Pending` → `Approved` → `Assigned` → `Completed`).
 - **Donor Directory:** Searchable directory of active registered donors matching required blood types.
 
 ---
@@ -45,8 +46,8 @@ The system provides custom role-gated interfaces for three distinct personas:
 
 | Role | Email | Password | Access / Portal |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `admin@gmail.com` | `admin123` | Full System Control (`/admin/dashboard`) |
-| **Donor** | `donor@gmail.com` | `donor123` | Donor Portal (`/donor/dashboard`) |
+| **Admin** | `admin@gmail.com` | `admin123` | System Control (`/admin/dashboard`) |
+| **Donor** | `donor@gmail.com` | `donor123` | Voluntary Donor Portal (`/donor/dashboard`) |
 | **Patient** | `patient@gmail.com` | `patient123` | Patient Care Hub (`/patient/dashboard`) |
 
 ---
@@ -56,22 +57,45 @@ The system provides custom role-gated interfaces for three distinct personas:
 ### Frontend
 - **Framework:** React 19 + Vite 8
 - **Routing:** React Router DOM v7
-- **HTTP Client:** Axios (with Bearer token interceptor)
-- **Styling:** Vanilla CSS design tokens (Glassmorphism theme)
+- **HTTP Client:** Axios (configured with Bearer token interceptor)
+- **Styling:** Vanilla CSS design tokens (Glassmorphic dark/light theme)
 
 ### Backend
 - **Framework:** FastAPI (Python 3.11)
 - **ORM & Database:** SQLAlchemy with SQLite (`blood_donation.db`)
-- **Security & Auth:** PyJWT (Jose), Passlib (bcrypt), HTTP Bearer middleware
-- **Data Validation:** Pydantic v2
+- **Security & Auth:** PyJWT (JOSE), Passlib (`bcrypt` password hashing), OAuth2 Bearer middleware
+- **Data Validation:** Pydantic v2 schemas
+
+### DevOps & CI/CD
+- **Automation Pipeline:** GitHub Actions (`.github/workflows/deploy.yml`)
+- **Cloud Hostings:** Vercel (React SPA Frontend) & Render (FastAPI Backend ASGI)
 
 ---
 
-## 🚀 Local Development Setup
+## 🔄 CI/CD Pipeline & GitHub Actions
+
+The repository includes an automated GitHub Actions pipeline (`.github/workflows/deploy.yml`) running 4 parallel jobs on push to `main`:
+
+```text
+               ┌──> 🚀 Deploy Frontend to Vercel
+               │
+[Test Frontend & Test Backend]
+               │
+               └──> ⚡ Deploy Backend to Render
+```
+
+1. **`Test & Build Frontend`**: Installs dependencies (`npm ci`) and builds the React production bundle (`npm run build`).
+2. **`Test Backend API`**: Installs Python 3.11 dependencies (`pip install -r requirements.txt`) and validates FastAPI setup.
+3. **`Deploy Frontend to Vercel`**: Triggers production build deployment to Vercel.
+4. **`Deploy Backend to Render`**: Triggers automated deployment to Render.
+
+---
+
+## 🚀 Local Setup & Development
 
 ### Prerequisites
-- Node.js (v18+) & npm
-- Python (v3.11+)
+- **Node.js** (v18+) & **npm**
+- **Python** (v3.11+)
 
 ### 1. Clone the Repository
 ```bash
@@ -84,7 +108,7 @@ cd Blood-Donation-Management-System-Web
 cd backend
 python -m venv venv
 
-# Activate virtual environment
+# Activate Virtual Environment:
 # Windows:
 venv\Scripts\activate
 # macOS/Linux:
@@ -93,7 +117,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
-*Backend API will run at `http://127.0.0.1:8000`*
+*Backend server runs at `http://127.0.0.1:8000` | Swagger Docs at `http://127.0.0.1:8000/docs`*
 
 ### 3. Frontend Setup
 ```bash
@@ -102,22 +126,20 @@ cd frontend
 npm install
 npm run dev
 ```
-*Frontend dev server will run at `http://localhost:5173`*
+*Frontend dev server runs at `http://localhost:5173`*
 
 ---
 
-## 📚 PRD & Architecture Documentation
+## 📚 Project Documentation & Artifacts
 
-Detailed product requirement documentation is available in the [`feature/PRD-phase/`](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/) directory:
-
-- 👥 **[Users & Personas](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/Users):** User Role Specifications & Access Control Matrix
-- 📖 **[User Stories](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/User_Stories):** Detailed user stories for Admin, Donor, and Patient
-- 🔄 **[Use Cases](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/Use_Cases):** Use case flows and alternative scenarios
-- ✅ **[Acceptance Criteria](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/Acceptance_Criteria):** Given-When-Then BDD specifications
-- 🗺️ **[User Journeys](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/design_user_journey):** Flowchart diagrams for user interactions
-- 📊 **[Data Flow Diagrams (DFD)](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/Data_Flow_Diagram%20_DFD):** Level 0 and Level 1 DFD models
-- 🗄️ **[Entity Relationship Diagram (ERD)](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/feature/PRD-phase/Design%20Entity%20Relationship%20Diagram%20%28ERD%29):** Database schema and foreign key relationships
-- 📜 **[GitHub Issues & PRs Guide](file:///c:/Users/Hp/Documents/GitHub/Blood-Donation-Management-System-Web/docs/admin-feature-issues-and-prs.md):** Form submission copy-paste guide for Admin feature assessment
+- 📑 **[Final Submission Report](FINAL_PROJECT_REPORT.md):** Complete CSE309 IUB Submission Report
+- 👥 **[Users & Personas](feature/PRD-phase/Users):** User Role Specifications & Access Control Matrix
+- 📖 **[User Stories](feature/PRD-phase/User_Stories):** User Stories for Admin, Donor, and Patient
+- 🔄 **[Use Cases](feature/PRD-phase/Use_Cases):** Use case flows and alternative scenarios
+- ✅ **[Acceptance Criteria](feature/PRD-phase/Acceptance_Criteria):** Given-When-Then BDD specifications
+- 🗺️ **[User Journeys](feature/PRD-phase/design_user_journey):** Flowchart diagrams for user interactions
+- 📊 **[Data Flow Diagrams (DFD)](feature/PRD-phase/Data_Flow_Diagram%20_DFD):** Level 0 and Level 1 DFD models
+- 🗄️ **[Entity Relationship Diagram (ERD)](feature/PRD-phase/Design%20Entity%20Relationship%20Diagram%20%28ERD%29):** Database schema and foreign key relationships
 
 ---
 
