@@ -59,15 +59,21 @@ jobs:
           pip install -r requirements.txt
 
   # -------------------------------------------------------------
-  # JOB 3: Verify Deployment Pipeline
+  # JOB 3: Deploy Backend to Render (Triggers Render Deploy Hook)
   # -------------------------------------------------------------
-  deploy-status:
-    name: Verify Deploy Pipeline
+  deploy-backend:
+    name: Deploy Backend to Render
     needs: [test-frontend, test-backend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
-      - name: Log Deployment Verification
+      - name: Trigger Render Deployment
         run: |
-          echo "All frontend and backend integration tests passed successfully!"
-          echo "Vercel and Render will now automatically deploy the updated main branch."
+          if [ -n "$RENDER_HOOK" ]; then
+            echo "Triggering Render Deploy Hook..."
+            curl -s -f -X POST "$RENDER_HOOK"
+          else
+            echo "No RENDER_DEPLOY_HOOK_URL secret set. Render will auto-deploy from main."
+          fi
