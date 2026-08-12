@@ -53,8 +53,8 @@ const INITIAL_SAMPLE_REQUESTS = [
 function Home() {
   const navigate = useNavigate();
   const [selectedGroup, setSelectedGroup] = useState("O+");
-  const [emergencyRequests, setEmergencyRequests] = useState([]);
-  const [loadingRequests, setLoadingRequests] = useState(true);
+  const [emergencyRequests, setEmergencyRequests] = useState(INITIAL_SAMPLE_REQUESTS);
+  const [loadingRequests, setLoadingRequests] = useState(false);
   const [selectedFilterGroup, setSelectedFilterGroup] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModalRequest, setActiveModalRequest] = useState(null);
@@ -76,18 +76,12 @@ function Home() {
 
   const fetchEmergencyRequests = async () => {
     try {
-      setLoadingRequests(true);
-      const res = await api.get("/public/emergency-requests");
+      const res = await api.get("/public/emergency-requests", { timeout: 3500 });
       if (res.data && res.data.length > 0) {
         setEmergencyRequests(res.data);
-      } else {
-        setEmergencyRequests(INITIAL_SAMPLE_REQUESTS);
       }
     } catch (err) {
-      console.warn("Failed to fetch live requests from backend, using sample requests:", err);
-      setEmergencyRequests(INITIAL_SAMPLE_REQUESTS);
-    } finally {
-      setLoadingRequests(false);
+      console.warn("Live backend request fetch timed out or failed, displaying initial emergency list:", err);
     }
   };
 
