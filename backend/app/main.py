@@ -40,11 +40,14 @@
 #     }
 
 
-from fastapi import FastAPI
+from typing import Optional
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text, case
+from sqlalchemy.orm import Session
 
-from .database import engine, SessionLocal
-from .models import Base
+from .database import engine, SessionLocal, get_db
+from .models import Base, BloodRequest
 from .routers import admin, auth, donor, patient
 from .utils.create_admin import create_admin
 
@@ -53,22 +56,6 @@ app = FastAPI(
     title="Blood Donation Management System",
     version="0.1.0"
 )
-
-
-# Allow React frontend
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=[
-#         "http://localhost:5173",
-#         "http://localhost:5174",
-#         "http://127.0.0.1:5173",
-#         "http://127.0.0.1:5174",
-#     ],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-from sqlalchemy import inspect, text
 
 app.add_middleware(
     CORSMiddleware,
@@ -111,4 +98,51 @@ app.include_router(patient.router)
 def root():
     return {
         "message": "Blood Donation Management System API"
-    }
+    }
+
+
+@app.get("/public/emergency-requests", tags=["Public"])
+@app.get("/emergency-requests", tags=["Public"])
+def get_public_emergency_requests(
+    blood_group: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(BloodRequest).filter(
+        BloodRequest.status.in_(["Pending", "Approved", "Assigned"])
+    )
+
+    if blood_group and blood_group.strip() and blood_group.upper() != "ALL":
+        query = query.filter(BloodRequest.blood_group == blood_group.strip())
+
+    requests = query.order_by(
+        case(
+            (BloodRequest.urgency.in_(["Urgent", "Critical", "Emergency"]), 0),
+            else_=1,
+        ),
+        BloodRequest.created_at.desc(),
+    ).all()
+
+    result = []
+    for req in requests:
+        patient_name = req.patient_name
+        if not patient_name and req.patient:
+            patient_name = req.patient.full_name
+
+        contact_number = req.contact_number
+        if not contact_number and req.patient:
+            contact_number = req.patient.phone
+
+        result.append({
+            "id": req.id,
+            "patient_name": patient_name or "Emergency Patient",
+            "contact_number": contact_number or "Contact Hospital Direct",
+            "blood_group": req.blood_group,
+            "hospital": req.hospital,
+            "quantity": req.quantity,
+            "urgency": req.urgency or "Normal",
+            "status": req.status,
+            "created_at": req.created_at.strftime("%Y-%m-%d %H:%M") if req.created_at else None,
+        })
+
+    return result
+
