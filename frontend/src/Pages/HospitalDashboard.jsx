@@ -755,22 +755,24 @@ function HospitalDashboard() {
                 <p>No medical centers found matching your search filter.</p>
               </div>
             ) : (
-              <div className="donors-grid">
+              <div className="hospitals-grid">
                 {hospitalsList.map((hosp) => (
-                  <div key={hosp.id} className="donor-card">
-                    <div className="card-top">
-                      <div>
+                  <div key={hosp.id} className="hospital-card">
+                    <div className="hosp-card-top">
+                      <div className="hosp-card-header-block" style={{ width: "100%" }}>
                         <h3>🏥 {hosp.name}</h3>
-                        <span className="hosp-city-badge" style={{ color: "#a5b4fc", fontSize: "13px" }}>
-                          📍 {hosp.city}
-                        </span>
+                        <div className="hosp-meta-row" style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
+                          <span className="hosp-city-badge" style={{ color: "#a5b4fc", fontSize: "13px", fontWeight: "600" }}>
+                            📍 {hosp.city}
+                          </span>
+                          <span className="emergency-service-pill" style={{ background: "rgba(234, 179, 8, 0.2)", color: "#fde047", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: "700" }}>
+                            ⚡ {hosp.emergency_services}
+                          </span>
+                        </div>
                       </div>
-                      <span className="emergency-service-pill" style={{ background: "rgba(234, 179, 8, 0.2)", color: "#fde047", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: "700" }}>
-                        ⚡ {hosp.emergency_services}
-                      </span>
                     </div>
 
-                    <div className="card-details">
+                    <div className="hosp-details">
                       <p><strong>Address:</strong> {hosp.address}</p>
                       <p><strong>Hotline:</strong> {hosp.phone}</p>
                       <p><strong>Blood Bank Status:</strong> <span style={{ color: "#4ade80", fontWeight: "700" }}>{hosp.blood_bank_status}</span></p>
