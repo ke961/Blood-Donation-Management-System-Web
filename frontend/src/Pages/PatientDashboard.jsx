@@ -739,13 +739,15 @@ function PatientDashboard() {
                 {hospitalsList.map((hosp) => (
                   <div key={hosp.id} className="hospital-card">
                     <div className="hosp-card-top">
-                      <div>
+                      <div className="hosp-card-header-block" style={{ width: "100%" }}>
                         <h3>🏥 {hosp.name}</h3>
-                        <span className="hosp-city-badge">📍 {hosp.city}</span>
+                        <div className="hosp-meta-row" style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
+                          <span className="hosp-city-badge">📍 {hosp.city}</span>
+                          <span className="emergency-service-pill">
+                            ⚡ {hosp.emergency_services}
+                          </span>
+                        </div>
                       </div>
-                      <span className="emergency-service-pill">
-                        ⚡ {hosp.emergency_services}
-                      </span>
                     </div>
 
                     <div className="hosp-details">
