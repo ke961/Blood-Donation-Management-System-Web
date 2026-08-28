@@ -385,3 +385,16 @@ def get_current_donor(
         )
 
     return current_user
+
+
+def get_current_hospital(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user.get("role") not in ["hospital", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Hospital access required",
+        )
+
+    return current_user
+
