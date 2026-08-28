@@ -48,7 +48,7 @@ from sqlalchemy.orm import Session
 
 from .database import engine, SessionLocal, get_db
 from .models import Base, BloodRequest
-from .routers import admin, auth, donor, patient
+from .routers import admin, auth, donor, patient, hospital
 from .utils.create_admin import create_admin
 
 
@@ -92,6 +92,8 @@ app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(donor.router)
 app.include_router(patient.router)
+app.include_router(hospital.router)
+
 
 
 @app.get("/", tags=["Root"])
