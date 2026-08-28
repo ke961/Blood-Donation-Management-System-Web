@@ -385,3 +385,296 @@ def list_registered_hospitals(
         }
         for h in hospitals
     ]
+
+
+SAMPLE_HOSPITALS_NETWORK = [
+    {
+        "id": "hosp-1",
+        "name": "Central Emergency General Hospital",
+        "city": "Downtown Metro",
+        "address": "450 Healthcare Boulevard, Suite 100",
+        "phone": "+1 (555) 019-2831",
+        "emergency_services": "24/7 ICU & Trauma Care",
+        "blood_bank_status": "Active Stock Available",
+        "available_groups": ["A+", "B+", "O+", "O-", "AB+"],
+        "active_requests": [
+            {
+                "id": "sample-req-1",
+                "patient_name": "Sarah Jenkins (ICU Room 302)",
+                "blood_group": "O-",
+                "quantity": 3,
+                "urgency": "Critical",
+                "status": "Pending",
+                "contact_number": "+1 (555) 019-2831",
+            },
+            {
+                "id": "sample-req-2",
+                "patient_name": "Emergency Surgical Suite",
+                "blood_group": "A+",
+                "quantity": 2,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 019-2831",
+            },
+        ],
+    },
+    {
+        "id": "hosp-2",
+        "name": "St. Jude Specialized Trauma & Surgical Center",
+        "city": "North District",
+        "address": "128 Medical Center Drive",
+        "phone": "+1 (555) 432-8900",
+        "emergency_services": "24/7 Blood Bank & Emergency Surgery",
+        "blood_bank_status": "High Demand (Urgent O- Needed)",
+        "available_groups": ["A+", "B-", "AB-", "O+"],
+        "active_requests": [
+            {
+                "id": "sample-req-3",
+                "patient_name": "Robert Chen (Trauma Ward B)",
+                "blood_group": "AB+",
+                "quantity": 2,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 432-8900",
+            },
+        ],
+    },
+    {
+        "id": "hosp-3",
+        "name": "Metropolitan Children's Hospital",
+        "city": "Westside",
+        "address": "89 Pediatric Avenue",
+        "phone": "+1 (555) 789-0123",
+        "emergency_services": "Pediatric Transfusion & Emergency Care",
+        "blood_bank_status": "Active Stock Available",
+        "available_groups": ["O-", "O+", "A-", "B+"],
+        "active_requests": [
+            {
+                "id": "sample-req-4",
+                "patient_name": "Elena Rostova (Pediatric Ward)",
+                "blood_group": "B-",
+                "quantity": 1,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 789-0123",
+            },
+        ],
+    },
+    {
+        "id": "hosp-4",
+        "name": "City Memorial Trauma & Red Cross Center",
+        "city": "Eastside",
+        "address": "56 Memorial Parkway",
+        "phone": "+1 (555) 234-5678",
+        "emergency_services": "Regional Blood Bank & Emergency Ward",
+        "blood_bank_status": "Full Blood Stock Available",
+        "available_groups": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+        "active_requests": [
+            {
+                "id": "sample-req-5",
+                "patient_name": "Emergency Blood Bank Reserve",
+                "blood_group": "O+",
+                "quantity": 4,
+                "urgency": "Normal",
+                "status": "Pending",
+                "contact_number": "+1 (555) 234-5678",
+            },
+        ],
+    },
+    {
+        "id": "hosp-5",
+        "name": "Apex University Medical & Research Center",
+        "city": "South Campus",
+        "address": "900 University Drive",
+        "phone": "+1 (555) 678-9012",
+        "emergency_services": "24/7 Organ & Transfusion Center",
+        "blood_bank_status": "Stock Available",
+        "available_groups": ["B+", "AB+", "O+", "A+"],
+        "active_requests": [
+            {
+                "id": "sample-req-6",
+                "patient_name": "Cardiovascular Surgery Unit",
+                "blood_group": "A-",
+                "quantity": 2,
+                "urgency": "Critical",
+                "status": "Pending",
+                "contact_number": "+1 (555) 678-9012",
+            },
+        ],
+    },
+    {
+        "id": "hosp-6",
+        "name": "Grace Mercy Care Medical Center",
+        "city": "Midtown Center",
+        "address": "312 Mercy Care Way",
+        "phone": "+1 (555) 321-7654",
+        "emergency_services": "24/7 Emergency Ward & Dialysis Unit",
+        "blood_bank_status": "Moderate Stock Available",
+        "available_groups": ["A+", "B+", "O+", "AB-"],
+        "active_requests": [
+            {
+                "id": "sample-req-7",
+                "patient_name": "General Surgery Ward 5",
+                "blood_group": "B+",
+                "quantity": 3,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 321-7654",
+            },
+        ],
+    },
+    {
+        "id": "hosp-7",
+        "name": "Mount Sinai Emergency Hospital & Blood Bank",
+        "city": "Highland Park",
+        "address": "740 Sinai Mountain Road",
+        "phone": "+1 (555) 987-1234",
+        "emergency_services": "24/7 Level 1 Trauma Center",
+        "blood_bank_status": "Urgent Need for O- & A-",
+        "available_groups": ["A+", "B+", "O+"],
+        "active_requests": [
+            {
+                "id": "sample-req-8",
+                "patient_name": "Trauma Resuscitation Unit",
+                "blood_group": "O-",
+                "quantity": 4,
+                "urgency": "Critical",
+                "status": "Pending",
+                "contact_number": "+1 (555) 987-1234",
+            },
+        ],
+    },
+    {
+        "id": "hosp-8",
+        "name": "Sunrise Community Health & Trauma Center",
+        "city": "Oakridge District",
+        "address": "512 Sunrise Boulevard",
+        "phone": "+1 (555) 654-9870",
+        "emergency_services": "Emergency Transfusion & Maternity Care",
+        "blood_bank_status": "Active Stock Available",
+        "available_groups": ["O+", "A+", "B-", "AB+"],
+        "active_requests": [
+            {
+                "id": "sample-req-9",
+                "patient_name": "Maternity Delivery Ward Room 12",
+                "blood_group": "O+",
+                "quantity": 2,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 654-9870",
+            },
+        ],
+    },
+    {
+        "id": "hosp-9",
+        "name": "Sacred Heart Medical & Surgical Center",
+        "city": "Riverside",
+        "address": "820 Riverside Drive",
+        "phone": "+1 (555) 456-7890",
+        "emergency_services": "Emergency Surgery & Oncology Ward",
+        "blood_bank_status": "Stock Available",
+        "available_groups": ["A-", "B+", "AB+", "O+"],
+        "active_requests": [
+            {
+                "id": "sample-req-10",
+                "patient_name": "Oncology Suite 3B",
+                "blood_group": "AB-",
+                "quantity": 1,
+                "urgency": "Normal",
+                "status": "Pending",
+                "contact_number": "+1 (555) 456-7890",
+            },
+        ],
+    },
+    {
+        "id": "hosp-10",
+        "name": "Horizon Regional Trauma Hospital",
+        "city": "Valley View",
+        "address": "105 Horizon Ridge Way",
+        "phone": "+1 (555) 876-1234",
+        "emergency_services": "24/7 Regional Emergency Response",
+        "blood_bank_status": "Stock Available",
+        "available_groups": ["O+", "A+", "B+", "O-"],
+        "active_requests": [
+            {
+                "id": "sample-req-11",
+                "patient_name": "Accident & Emergency Room 4",
+                "blood_group": "A+",
+                "quantity": 2,
+                "urgency": "Urgent",
+                "status": "Pending",
+                "contact_number": "+1 (555) 876-1234",
+            },
+        ],
+    },
+]
+
+
+@router.get("/hospitals")
+def get_hospitals_network_for_hospital(
+    search: Optional[str] = None,
+    blood_group: Optional[str] = None,
+    current_user: dict = Depends(get_current_hospital),
+    db: Session = Depends(get_db),
+):
+    db_hospitals = db.query(User).filter(User.role == "hospital").all()
+    db_list = []
+    for h in db_hospitals:
+        # Find DB requests associated with this hospital user
+        reqs = (
+            db.query(BloodRequest)
+            .filter(
+                (BloodRequest.patient_id == h.id)
+                | (BloodRequest.hospital.ilike(f"%{h.full_name}%")),
+                BloodRequest.status.in_(["Pending", "Approved", "Assigned"]),
+            )
+            .all()
+        )
+        active_reqs = [
+            {
+                "id": r.id,
+                "patient_name": r.patient_name or "Emergency Patient",
+                "blood_group": r.blood_group,
+                "quantity": r.quantity,
+                "urgency": r.urgency or "Normal",
+                "status": r.status,
+                "contact_number": r.contact_number or h.phone or "N/A",
+            }
+            for r in reqs
+        ]
+
+        db_list.append({
+            "id": f"user-hosp-{h.id}",
+            "name": h.full_name,
+            "city": h.address or "Central District",
+            "address": h.address or "Emergency Transfusion Complex",
+            "phone": h.phone or "N/A",
+            "emergency_services": "24/7 ICU & Emergency Blood Bank",
+            "blood_bank_status": "Registered Hospital Center" if h.is_available else "Limited Stock",
+            "available_groups": [h.blood_group] if h.blood_group else ["A+", "B+", "O+", "O-", "AB+"],
+            "active_requests": active_reqs,
+        })
+
+    hospitals = db_list + SAMPLE_HOSPITALS_NETWORK
+
+    if search:
+        s = search.lower()
+        hospitals = [
+            h
+            for h in hospitals
+            if s in h["name"].lower()
+            or s in h["address"].lower()
+            or s in h["city"].lower()
+        ]
+    if blood_group:
+        filtered = []
+        for h in hospitals:
+            has_stock = blood_group in h["available_groups"]
+            has_req = any(r["blood_group"] == blood_group for r in h.get("active_requests", []))
+            if has_stock or has_req:
+                filtered.append(h)
+        hospitals = filtered
+
+    return hospitals
+
+
