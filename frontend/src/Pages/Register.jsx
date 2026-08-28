@@ -115,6 +115,7 @@ function Register() {
           >
             <option value="donor">Register as Donor</option>
             <option value="patient">Register as Patient</option>
+            <option value="hospital">Register as Hospital / Medical Center</option>
           </select>
 
           <select
