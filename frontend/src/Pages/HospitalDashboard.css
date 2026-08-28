@@ -511,3 +511,67 @@
     padding: 24px;
   }
 }
+
+/* Hospital Directory Grid Styles */
+.hospitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.hospital-card {
+  background: rgba(23, 19, 60, 0.6);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 18px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hospital-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(244, 63, 94, 0.5);
+  box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.5);
+}
+
+.hosp-card-top {
+  display: flex;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.hosp-card-header-block {
+  width: 100%;
+}
+
+.hosp-card-top h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.hosp-city-badge {
+  font-size: 13px;
+  color: #a5b4fc;
+  font-weight: 600;
+}
+
+.emergency-service-pill {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.hosp-details p {
+  font-size: 14px;
+  color: #c7d2fe;
+  margin: 8px 0;
+}
+
