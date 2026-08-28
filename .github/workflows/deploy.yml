@@ -67,21 +67,22 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
-      VERCEL_TOKEN_VAL: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Deploy Frontend
         run: |
-          if [ -n "$VERCEL_TOKEN_VAL" ]; then
-            echo "Deploying Frontend to Vercel CLI..."
-            npm install --global vercel@latest
-            vercel pull --yes --environment=production --token=$VERCEL_TOKEN_VAL
-            vercel build --prod --token=$VERCEL_TOKEN_VAL
-            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN_VAL
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
+            echo "Deploying Frontend using Vercel CLI..."
+            npx vercel@latest pull --yes --environment=production --token=$VERCEL_TOKEN
+            npx vercel@latest build --prod --token=$VERCEL_TOKEN
+            npx vercel@latest deploy --prebuilt --prod --token=$VERCEL_TOKEN
           else
-            echo "Vercel auto-deploys frontend from main branch."
+            echo "Vercel configuration secrets (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID) not fully set. Falling back to Vercel Git integration."
           fi
 
   # -------------------------------------------------------------
@@ -101,5 +102,6 @@ jobs:
             echo "Triggering Render Deploy Hook..."
             curl -s -f -X POST "$RENDER_HOOK_VAL"
           else
-            echo "Render auto-deploys backend from main branch."
+            echo "Render deploy hook secrets (RENDER_DEPLOY_HOOK_URL) not set. Auto-deploying backend via Render Git integration."
           fi
+
