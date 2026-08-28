@@ -5,7 +5,7 @@ import "./HospitalDashboard.css";
 
 function HospitalDashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview"); // overview, my-requests, patient-queue, donors, profile
+  const [activeTab, setActiveTab] = useState("overview"); // overview, my-requests, patient-queue, hospitals, donors, profile
 
   // User/Hospital State
   const [hospitalUser, setHospitalUser] = useState(() => {
@@ -27,6 +27,9 @@ function HospitalDashboard() {
 
   const [myRequests, setMyRequests] = useState([]);
   const [allRequests, setAllRequests] = useState([]);
+  const [hospitalsList, setHospitalsList] = useState([]);
+  const [hospitalSearch, setHospitalSearch] = useState("");
+  const [hospitalBloodFilter, setHospitalBloodFilter] = useState("");
   const [donorsList, setDonorsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ message: "", type: "" });
@@ -64,12 +67,14 @@ function HospitalDashboard() {
       fetchMyRequests();
     } else if (activeTab === "patient-queue") {
       fetchAllRequests();
+    } else if (activeTab === "hospitals") {
+      fetchHospitalsNetwork();
     } else if (activeTab === "donors") {
       fetchDonors();
     } else if (activeTab === "profile") {
       fetchProfile();
     }
-  }, [activeTab, donorBloodFilter, queueBloodFilter, queueStatusFilter]);
+  }, [activeTab, donorBloodFilter, queueBloodFilter, queueStatusFilter, hospitalSearch, hospitalBloodFilter]);
 
   const showAlert = (message, type = "success") => {
     setAlert({ message, type });
@@ -144,6 +149,20 @@ function HospitalDashboard() {
       setAllRequests(res.data);
     } catch (err) {
       showAlert("Failed to load emergency requests queue.", "error");
+    }
+  };
+
+  const fetchHospitalsNetwork = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (hospitalSearch) params.append("search", hospitalSearch);
+      if (hospitalBloodFilter) params.append("blood_group", hospitalBloodFilter);
+
+      const url = `/hospital/hospitals?${params.toString()}`;
+      const res = await api.get(url);
+      setHospitalsList(res.data);
+    } catch (err) {
+      showAlert("Failed to fetch hospitals network list.", "error");
     }
   };
 
@@ -307,6 +326,12 @@ function HospitalDashboard() {
           📋 Emergency Requests Queue
         </button>
         <button
+          className={`tab-btn ${activeTab === "hospitals" ? "active" : ""}`}
+          onClick={() => setActiveTab("hospitals")}
+        >
+          🏥 Hospital Network
+        </button>
+        <button
           className={`tab-btn ${activeTab === "donors" ? "active" : ""}`}
           onClick={() => setActiveTab("donors")}
         >
@@ -390,7 +415,7 @@ function HospitalDashboard() {
                 <h2>Hospital Transfusion Management Quick Actions</h2>
               </div>
               <p style={{ color: "#c7d2fe", fontSize: "15px", lineHeight: "1.6" }}>
-                As a registered hospital user, you can issue high-priority blood requests for emergency wards, respond to patient blood requests, and coordinate with registered blood donors directly.
+                As a registered hospital user, you can issue high-priority blood requests for emergency wards, respond to patient blood requests, coordinate with other hospitals in the network, and connect with blood donors directly.
               </p>
               <div style={{ marginTop: "20px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
                 <button
@@ -405,6 +430,13 @@ function HospitalDashboard() {
                   onClick={() => setActiveTab("patient-queue")}
                 >
                   Inspect Emergency Requests Queue →
+                </button>
+
+                <button
+                  className="secondary-btn"
+                  onClick={() => setActiveTab("hospitals")}
+                >
+                  View Hospital Network Directory
                 </button>
 
                 <button
@@ -684,7 +716,127 @@ function HospitalDashboard() {
           </div>
         )}
 
-        {/* TAB 4: DONOR NETWORK */}
+        {/* TAB 4: HOSPITALS NETWORK LIST */}
+        {activeTab === "hospitals" && (
+          <div className="section-card">
+            <div className="section-header">
+              <h2>🏥 Partner Hospitals & Medical Center Directory</h2>
+              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                <input
+                  type="text"
+                  placeholder="Search hospital or city..."
+                  value={hospitalSearch}
+                  onChange={(e) => setHospitalSearch(e.target.value)}
+                  className="filter-select"
+                  style={{ width: "220px" }}
+                />
+
+                <select
+                  value={hospitalBloodFilter}
+                  onChange={(e) => setHospitalBloodFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">All Blood Stock</option>
+                  <option value="A+">A+ Stock</option>
+                  <option value="A-">A- Stock</option>
+                  <option value="B+">B+ Stock</option>
+                  <option value="B-">B- Stock</option>
+                  <option value="AB+">AB+ Stock</option>
+                  <option value="AB-">AB- Stock</option>
+                  <option value="O+">O+ Stock</option>
+                  <option value="O-">O- Stock</option>
+                </select>
+              </div>
+            </div>
+
+            {hospitalsList.length === 0 ? (
+              <div className="empty-state">
+                <span>🏥</span>
+                <p>No medical centers found matching your search filter.</p>
+              </div>
+            ) : (
+              <div className="donors-grid">
+                {hospitalsList.map((hosp) => (
+                  <div key={hosp.id} className="donor-card">
+                    <div className="card-top">
+                      <div>
+                        <h3>🏥 {hosp.name}</h3>
+                        <span className="hosp-city-badge" style={{ color: "#a5b4fc", fontSize: "13px" }}>
+                          📍 {hosp.city}
+                        </span>
+                      </div>
+                      <span className="emergency-service-pill" style={{ background: "rgba(234, 179, 8, 0.2)", color: "#fde047", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: "700" }}>
+                        ⚡ {hosp.emergency_services}
+                      </span>
+                    </div>
+
+                    <div className="card-details">
+                      <p><strong>Address:</strong> {hosp.address}</p>
+                      <p><strong>Hotline:</strong> {hosp.phone}</p>
+                      <p><strong>Blood Bank Status:</strong> <span style={{ color: "#4ade80", fontWeight: "700" }}>{hosp.blood_bank_status}</span></p>
+
+                      <div style={{ marginTop: "10px" }}>
+                        <strong style={{ fontSize: "12px", color: "#a5b4fc", display: "block", marginBottom: "6px" }}>Stocked Blood Groups:</strong>
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                          {hosp.available_groups && hosp.available_groups.map((group) => (
+                            <span key={group} style={{ background: "rgba(244, 63, 94, 0.2)", color: "#fda4af", border: "1px solid rgba(244, 63, 94, 0.4)", fontSize: "11px", padding: "2px 8px", borderRadius: "6px", fontWeight: "700" }}>
+                              🩸 {group}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Active Hospital Needs Section */}
+                      {hosp.active_requests && hosp.active_requests.length > 0 ? (
+                        <div style={{ marginTop: "14px", background: "rgba(15, 12, 41, 0.7)", border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "12px", padding: "12px" }}>
+                          <strong style={{ fontSize: "13px", color: "#f43f5e", display: "flex", alignItems: "center", gap: "6px" }}>
+                            ⚡ Active Emergency Blood Needs ({hosp.active_requests.length})
+                          </strong>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+                            {hosp.active_requests.map((req) => (
+                              <div key={req.id} style={{ background: "rgba(23, 19, 60, 0.8)", padding: "8px 12px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div>
+                                  <span style={{ fontWeight: "800", color: "#f43f5e", fontSize: "13px" }}>{req.blood_group}</span>
+                                  <span style={{ fontSize: "12px", color: "#c7d2fe", marginLeft: "8px" }}>({req.quantity} Bag{req.quantity > 1 ? "s" : ""}) • {req.urgency}</span>
+                                  <div style={{ fontSize: "11px", color: "#a5b4fc" }}>{req.patient_name}</div>
+                                </div>
+                                <button
+                                  className="action-btn-sm complete"
+                                  style={{ fontSize: "11px", padding: "4px 10px", margin: 0 }}
+                                  onClick={() => {
+                                    if (req.id.toString().startsWith("sample-")) {
+                                      showAlert(`Responded to ${hosp.name}'s request for ${req.blood_group}! Transfusion team notified.`);
+                                    } else {
+                                      handleUpdateRequestStatus(req.id, "Approved");
+                                    }
+                                  }}
+                                >
+                                  Fulfill Need
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "12px", fontSize: "12px", color: "#4ade80" }}>
+                          ✓ No critical blood shortage reported currently
+                        </div>
+                      )}
+                    </div>
+
+                    {hosp.phone && (
+                      <a href={`tel:${hosp.phone}`} className="contact-donor-btn">
+                        📞 Contact Hospital Hotline
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 5: DONOR NETWORK */}
         {activeTab === "donors" && (
           <div className="section-card">
             <div className="section-header">
@@ -741,7 +893,7 @@ function HospitalDashboard() {
           </div>
         )}
 
-        {/* TAB 5: HOSPITAL PROFILE */}
+        {/* TAB 6: HOSPITAL PROFILE */}
         {activeTab === "profile" && (
           <div className="section-card">
             <div className="section-header">
