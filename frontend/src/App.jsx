@@ -1,32 +1,3 @@
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// import Login from "./pages/Login";
-// import Register from "./pages/Register";
-// import Dashboard from "./pages/Dashboard";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path="/" element={<Login />} />
-
-//         <Route path="/login" element={<Login />} />
-
-//         <Route path="/register" element={<Register />} />
-
-//         <Route path="/dashboard" element={<Dashboard />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-
-
-
-
-
 import {
   BrowserRouter,
   Routes,
@@ -40,9 +11,11 @@ import Register from "./Pages/Register";
 import AdminDashboard from "./admin/AdminDashboard";
 import DonorDashboard from "./Pages/DonorDashboard";
 import PatientDashboard from "./Pages/PatientDashboard";
+import HospitalDashboard from "./Pages/HospitalDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import DonorProtectedRoute from "./components/DonorProtectedRoute";
 import PatientProtectedRoute from "./components/PatientProtectedRoute";
+import HospitalProtectedRoute from "./components/HospitalProtectedRoute";
 
 function App() {
   return (
@@ -91,6 +64,15 @@ function App() {
         />
 
         <Route
+          path="/hospital/dashboard"
+          element={
+            <HospitalProtectedRoute>
+              <HospitalDashboard />
+            </HospitalProtectedRoute>
+          }
+        />
+
+        <Route
           path="*"
           element={<Navigate to="/" replace />}
         />
@@ -99,4 +81,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;
