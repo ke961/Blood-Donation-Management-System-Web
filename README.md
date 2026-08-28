@@ -7,7 +7,7 @@
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> **LifeFlow** is a modern, full-stack emergency blood donation management platform built to connect voluntary blood donors, patients requiring urgent transfusions, and hospital administrators in real time.
+> **LifeFlow** is a modern, full-stack emergency blood donation management platform built to connect voluntary blood donors, patients requiring urgent transfusions, hospital care centers, and administrators in real time.
 
 ---
 
@@ -21,24 +21,32 @@
 
 ## 🎯 Key User Portals & Features
 
-The platform provides custom role-gated interfaces for three distinct personas:
+The platform provides custom role-gated interfaces for four distinct personas:
 
 ### 1. 🛡️ System Administrator (Admin Portal)
 - **Real-time Analytics Overview:** Monitor system metrics for total users, registered donors, patient count, donation stats, and blood request statuses (`Pending`, `Approved`, `Assigned`, `Completed`).
-- **User Account Management:** Full user account control, including role switching (`Admin`, `Donor`, `Patient`) and account deletion with cascade handling.
-- **Emergency Request Management:** Create hospital emergency requests manually and update request fulfillment states.
+- **User Account Management:** Full user account control, including role switching (`Admin`, `Donor`, `Patient`, `Hospital`) and account deletion with cascade handling.
+- **Emergency Request Management:** Monitor and update all active system blood requests and volunteer allocations.
 - **Donation Audit Records:** Monitor donor volunteer commitments and verify completed transfusions.
 
-### 2. ❤️ Voluntary Donor (Donor Portal)
+### 2. 🏥 Hospital / Medical Center Portal (New Role)
+- **Hospital Dashboard Statistics:** View hospital-specific active requests, pending transfusions, assigned transfusions, and completed statistics.
+- **Hospital Emergency Requests:** Create and post official hospital blood requests, specifying departments, units, contact hotlines, and urgency levels.
+- **Emergency System Queue:** Review the entire list of system emergency requests created by patients. Perform one-click actions: **"Accept & Approve"** or **"Fulfill Blood"** to manage care directly.
+- **Hospital Directory & Active Needs**: Search and browse other partner hospitals. View a live **"⚡ Active Emergency Blood Needs"** section on each hospital's card to quickly fulfill urgent requests.
+- **Donor Network Lookup**: Search and filter available registered donors to contact for donation drives.
+
+### 3. ❤️ Voluntary Donor (Donor Portal)
 - **Live Availability Toggle:** One-click availability switch (`Available to Donate` vs `Currently Unavailable`).
 - **Matched Request Discovery:** Automatic blood group matching highlight (`⭐ Matches Your Blood Group`).
-- **Volunteer Workflow:** Single-click volunteer commitment for active hospital requests.
+- **Volunteer Workflow:** Single-click volunteer commitment for active patient or hospital emergency requests.
 - **Donation History:** Track past and active donation commitments.
 
-### 3. 🩸 Patient Care Hub (Patient Portal)
-- **Emergency Request Submission:** Submit blood requests specifying hospital name/address, required blood group, units needed, city, contact number, and urgency level (`Normal`, `Urgent`, `Critical`).
-- **Fulfillment Lifecycle Tracking:** Real-time tracking of request status (`Pending` → `Approved` → `Assigned` → `Completed`).
-- **Donor Directory:** Searchable directory of active registered donors matching required blood types.
+### 4. 🩸 Patient Care Hub (Patient Portal)
+- **Emergency Request Submission:** Submit blood requests specifying hospital name/address, required blood group, units needed, contact number, and urgency level (`Normal`, `Urgent`, `Critical`).
+- **Fulfillment Lifecycle Tracking:** Real-time tracking of request status (`Pending` → `Approved` → `Assigned` → `Completed`) with volunteer donor lists.
+- **Hospital Directory & Directory Needs**: Browse partner hospitals and view their live stocked blood groups and active emergency needs.
+- **Donor Discovery**: Searchable directory of active registered donors matching required blood types.
 
 ---
 
@@ -49,6 +57,7 @@ The platform provides custom role-gated interfaces for three distinct personas:
 | **Admin** | `admin@gmail.com` | `admin123` | System Control (`/admin/dashboard`) |
 | **Donor** | `donor@gmail.com` | `donor123` | Voluntary Donor Portal (`/donor/dashboard`) |
 | **Patient** | `patient@gmail.com` | `patient123` | Patient Care Hub (`/patient/dashboard`) |
+| **Hospital** | `hospital@gmail.com` | `hospital123` | Hospital Portal (`/hospital/dashboard`) |
 
 ---
 
@@ -86,7 +95,7 @@ The repository includes an automated GitHub Actions pipeline (`.github/workflows
 
 1. **`Test & Build Frontend`**: Installs dependencies (`npm ci`) and builds the React production bundle (`npm run build`).
 2. **`Test Backend API`**: Installs Python 3.11 dependencies (`pip install -r requirements.txt`) and validates FastAPI setup.
-3. **`Deploy Frontend to Vercel`**: Triggers production build deployment to Vercel.
+3. **`Deploy Frontend to Vercel`**: Triggers production build deployment to Vercel. Utilizes standard environment variables `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` for secure, linked CLI builds.
 4. **`Deploy Backend to Render`**: Triggers automated deployment to Render.
 
 ---
