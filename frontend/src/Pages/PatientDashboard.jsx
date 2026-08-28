@@ -763,6 +763,37 @@ function PatientDashboard() {
                           ))}
                         </div>
                       </div>
+
+                      {/* Active Hospital Needs Section */}
+                      {hosp.active_requests && hosp.active_requests.length > 0 ? (
+                        <div style={{ marginTop: "14px", background: "rgba(15, 12, 41, 0.7)", border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "12px", padding: "12px" }}>
+                          <strong style={{ fontSize: "13px", color: "#f43f5e", display: "flex", alignItems: "center", gap: "6px" }}>
+                            ⚡ Urgent Blood Needs at this Hospital ({hosp.active_requests.length})
+                          </strong>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+                            {hosp.active_requests.map((req) => (
+                              <div key={req.id} style={{ background: "rgba(23, 19, 60, 0.8)", padding: "8px 12px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div>
+                                  <span style={{ fontWeight: "800", color: "#f43f5e", fontSize: "13px" }}>{req.blood_group}</span>
+                                  <span style={{ fontSize: "12px", color: "#c7d2fe", marginLeft: "8px" }}>({req.quantity} Bag{req.quantity > 1 ? "s" : ""}) • {req.urgency}</span>
+                                  <div style={{ fontSize: "11px", color: "#a5b4fc" }}>{req.patient_name}</div>
+                                </div>
+                                <button
+                                  className="action-btn-sm complete"
+                                  style={{ fontSize: "11px", padding: "4px 10px", margin: 0 }}
+                                  onClick={() => handleSelectHospitalForRequest(hosp)}
+                                >
+                                  Request Blood
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "12px", fontSize: "12px", color: "#4ade80" }}>
+                          ✓ Blood stock healthy & operational
+                        </div>
+                      )}
                     </div>
 
                     <div className="hosp-card-actions">
