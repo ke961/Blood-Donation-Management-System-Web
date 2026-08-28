@@ -133,6 +133,8 @@ function Login() {
         navigate("/donor/dashboard");
       } else if (role === "patient") {
         navigate("/patient/dashboard");
+      } else if (role === "hospital") {
+        navigate("/hospital/dashboard");
       } else {
         setErrorMessage("Invalid user role.");
       }
