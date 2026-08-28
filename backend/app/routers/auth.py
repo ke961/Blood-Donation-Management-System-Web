@@ -206,10 +206,10 @@ router = APIRouter(
 def register(user: UserRegister, db: Session = Depends(get_db)):
     role = user.role.lower()
 
-    if role not in ["donor", "patient"]:
+    if role not in ["donor", "patient", "hospital"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only donor and patient registration is allowed",
+            detail="Only donor, patient, and hospital registration is allowed",
         )
 
     existing_user = db.query(User).filter(User.email == user.email).first()
