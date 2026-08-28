@@ -5,7 +5,7 @@ import "./PatientDashboard.css";
 
 function PatientDashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview"); // overview, requests, new-request, donors, profile
+  const [activeTab, setActiveTab] = useState("overview"); // overview, requests, new-request, donors, hospitals, profile
 
   // Dashboard & User state
   const [patientUser, setPatientUser] = useState(() => {
@@ -26,6 +26,9 @@ function PatientDashboard() {
 
   const [myRequests, setMyRequests] = useState([]);
   const [donorsList, setDonorsList] = useState([]);
+  const [hospitalsList, setHospitalsList] = useState([]);
+  const [hospitalSearch, setHospitalSearch] = useState("");
+  const [hospitalBloodFilter, setHospitalBloodFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ message: "", type: "" });
   const [bloodFilter, setBloodFilter] = useState("");
@@ -51,10 +54,6 @@ function PatientDashboard() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Volunteer Modal / Detail State
-  const [selectedVolunteers, setSelectedVolunteers] = useState(null);
-  const [editingRequest, setEditingRequest] = useState(null);
-
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -64,10 +63,12 @@ function PatientDashboard() {
       fetchMyRequests();
     } else if (activeTab === "donors") {
       fetchDonors();
+    } else if (activeTab === "hospitals") {
+      fetchHospitals();
     } else if (activeTab === "profile") {
       fetchProfile();
     }
-  }, [activeTab, bloodFilter]);
+  }, [activeTab, bloodFilter, hospitalSearch, hospitalBloodFilter]);
 
   const showAlert = (message, type = "success") => {
     setAlert({ message, type });
@@ -136,6 +137,20 @@ function PatientDashboard() {
     }
   };
 
+  const fetchHospitals = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (hospitalSearch) params.append("search", hospitalSearch);
+      if (hospitalBloodFilter) params.append("blood_group", hospitalBloodFilter);
+
+      const url = `/patient/hospitals?${params.toString()}`;
+      const res = await api.get(url);
+      setHospitalsList(res.data);
+    } catch (err) {
+      showAlert("Failed to fetch partner hospitals.", "error");
+    }
+  };
+
   const fetchProfile = async () => {
     try {
       const res = await api.get("/patient/profile");
@@ -178,6 +193,15 @@ function PatientDashboard() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSelectHospitalForRequest = (hospital) => {
+    setNewRequest((prev) => ({
+      ...prev,
+      hospital: `${hospital.name}, ${hospital.address}`,
+    }));
+    setActiveTab("new-request");
+    showAlert(`Selected ${hospital.name} for blood request form.`);
   };
 
   const handleUpdateRequestStatus = async (requestId, newStatus) => {
@@ -279,6 +303,12 @@ function PatientDashboard() {
           ➕ Post New Request
         </button>
         <button
+          className={`tab-btn ${activeTab === "hospitals" ? "active" : ""}`}
+          onClick={() => setActiveTab("hospitals")}
+        >
+          🏥 Hospital Directory
+        </button>
+        <button
           className={`tab-btn ${activeTab === "donors" ? "active" : ""}`}
           onClick={() => setActiveTab("donors")}
         >
@@ -376,6 +406,13 @@ function PatientDashboard() {
                   onClick={() => setActiveTab("new-request")}
                 >
                   Post Emergency Blood Request →
+                </button>
+
+                <button
+                  className="secondary-btn"
+                  onClick={() => setActiveTab("hospitals")}
+                >
+                  Browse Partner Hospitals Directory
                 </button>
 
                 <button
@@ -659,7 +696,94 @@ function PatientDashboard() {
           </div>
         )}
 
-        {/* TAB 4: VIEW DONORS */}
+        {/* TAB 4: HOSPITALS DIRECTORY */}
+        {activeTab === "hospitals" && (
+          <div className="section-card">
+            <div className="section-header">
+              <h2>🏥 Partner Hospitals & Blood Bank Directory</h2>
+              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                <input
+                  type="text"
+                  placeholder="Search hospital or city..."
+                  value={hospitalSearch}
+                  onChange={(e) => setHospitalSearch(e.target.value)}
+                  className="filter-select"
+                  style={{ width: "220px" }}
+                />
+
+                <select
+                  value={hospitalBloodFilter}
+                  onChange={(e) => setHospitalBloodFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">All Blood Stock</option>
+                  <option value="A+">A+ Stock</option>
+                  <option value="A-">A- Stock</option>
+                  <option value="B+">B+ Stock</option>
+                  <option value="B-">B- Stock</option>
+                  <option value="AB+">AB+ Stock</option>
+                  <option value="AB-">AB- Stock</option>
+                  <option value="O+">O+ Stock</option>
+                  <option value="O-">O- Stock</option>
+                </select>
+              </div>
+            </div>
+
+            {hospitalsList.length === 0 ? (
+              <div className="empty-state">
+                <span>🏥</span>
+                <p>No hospitals found matching your search filter.</p>
+              </div>
+            ) : (
+              <div className="hospitals-grid">
+                {hospitalsList.map((hosp) => (
+                  <div key={hosp.id} className="hospital-card">
+                    <div className="hosp-card-top">
+                      <div>
+                        <h3>🏥 {hosp.name}</h3>
+                        <span className="hosp-city-badge">📍 {hosp.city}</span>
+                      </div>
+                      <span className="emergency-service-pill">
+                        ⚡ {hosp.emergency_services}
+                      </span>
+                    </div>
+
+                    <div className="hosp-details">
+                      <p><strong>Address:</strong> {hosp.address}</p>
+                      <p><strong>Emergency Hotline:</strong> {hosp.phone}</p>
+                      <p><strong>Blood Bank Status:</strong> <span className="status-highlight">{hosp.blood_bank_status}</span></p>
+
+                      <div className="available-stocks-section">
+                        <strong>Stocked Blood Groups:</strong>
+                        <div className="stock-tags-wrapper">
+                          {hosp.available_groups.map((group) => (
+                            <span key={group} className="stock-tag">
+                              🩸 {group}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="hosp-card-actions">
+                      <a href={`tel:${hosp.phone}`} className="contact-donor-btn" style={{ textDecoration: "none", display: "inline-block" }}>
+                        📞 Call Hotline
+                      </a>
+                      <button
+                        className="select-hosp-btn"
+                        onClick={() => handleSelectHospitalForRequest(hosp)}
+                      >
+                        + Request Blood Here
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 5: VIEW DONORS */}
         {activeTab === "donors" && (
           <div className="section-card">
             <div className="section-header">
@@ -716,7 +840,7 @@ function PatientDashboard() {
           </div>
         )}
 
-        {/* TAB 5: MY PROFILE */}
+        {/* TAB 6: MY PROFILE */}
         {activeTab === "profile" && (
           <div className="section-card">
             <div className="section-header">
