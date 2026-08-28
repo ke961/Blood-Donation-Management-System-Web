@@ -300,3 +300,102 @@ def update_patient_profile(
             "address": patient.address,
         },
     }
+
+
+# -------------------------
+# Partner Hospitals Directory
+# -------------------------
+
+SAMPLE_HOSPITALS = [
+    {
+        "id": 1,
+        "name": "Central Emergency General Hospital",
+        "city": "Downtown Metro",
+        "address": "450 Healthcare Boulevard, Suite 100",
+        "phone": "+1 (555) 019-2831",
+        "emergency_services": "24/7 ICU & Trauma Care",
+        "blood_bank_status": "Active Stock Available",
+        "available_groups": ["A+", "B+", "O+", "O-", "AB+"],
+    },
+    {
+        "id": 2,
+        "name": "St. Jude Specialized Trauma & Surgical Center",
+        "city": "North District",
+        "address": "128 Medical Center Drive",
+        "phone": "+1 (555) 432-8900",
+        "emergency_services": "24/7 Blood Bank & Emergency Surgery",
+        "blood_bank_status": "High Demand (Urgent O- Needed)",
+        "available_groups": ["A+", "B-", "AB-", "O+"],
+    },
+    {
+        "id": 3,
+        "name": "Metropolitan Children's Hospital",
+        "city": "Westside",
+        "address": "89 Pediatric Avenue",
+        "phone": "+1 (555) 789-0123",
+        "emergency_services": "Pediatric Transfusion & Emergency Care",
+        "blood_bank_status": "Active Stock Available",
+        "available_groups": ["O-", "O+", "A-", "B+"],
+    },
+    {
+        "id": 4,
+        "name": "City Memorial Trauma & Red Cross Center",
+        "city": "Eastside",
+        "address": "56 Memorial Parkway",
+        "phone": "+1 (555) 234-5678",
+        "emergency_services": "Regional Blood Bank & Emergency Ward",
+        "blood_bank_status": "Full Blood Stock Available",
+        "available_groups": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    },
+    {
+        "id": 5,
+        "name": "Apex University Medical & Research Center",
+        "city": "South Campus",
+        "address": "900 University Drive",
+        "phone": "+1 (555) 678-9012",
+        "emergency_services": "24/7 Organ & Transfusion Center",
+        "blood_bank_status": "Stock Available",
+        "available_groups": ["B+", "AB+", "O+", "A+"],
+    },
+]
+
+
+@router.get("/hospitals")
+def get_partner_hospitals(
+    search: Optional[str] = None,
+    blood_group: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # Fetch registered hospital users from database
+    db_hospitals = db.query(User).filter(User.role == "hospital").all()
+    db_list = [
+        {
+            "id": f"user-hosp-{h.id}",
+            "name": h.full_name,
+            "city": h.address or "Central Metro",
+            "address": h.address or "Hospital Emergency Ward",
+            "phone": h.phone or "N/A",
+            "emergency_services": "24/7 ICU & Emergency Blood Bank",
+            "blood_bank_status": "Registered Hospital Center" if h.is_available else "Limited Stock",
+            "available_groups": [h.blood_group] if h.blood_group else ["A+", "B+", "O+", "O-", "AB+"],
+        }
+        for h in db_hospitals
+    ]
+
+    hospitals = db_list + SAMPLE_HOSPITALS
+
+    if search:
+        s = search.lower()
+        hospitals = [
+            h
+            for h in hospitals
+            if s in h["name"].lower()
+            or s in h["address"].lower()
+            or s in h["city"].lower()
+        ]
+    if blood_group:
+        hospitals = [
+            h for h in hospitals if blood_group in h["available_groups"]
+        ]
+    return hospitals
