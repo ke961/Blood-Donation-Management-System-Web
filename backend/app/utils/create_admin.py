@@ -76,6 +76,37 @@ def create_admin(db: Session):
             new_donor = User(**donor_data)
             db.add(new_donor)
 
+    # 2b. Create Default Patient and Hospital
+    patient_user = db.query(User).filter(User.email == "patient@gmail.com").first()
+    if not patient_user:
+        patient_user = User(
+            full_name="Jane Patient",
+            email="patient@gmail.com",
+            password=hash_password("patient123"),
+            role="patient",
+            phone="01722223333",
+            blood_group="AB+",
+            gender="Female",
+            address="Mirpur, Dhaka",
+            is_available=True
+        )
+        db.add(patient_user)
+
+    hospital_user = db.query(User).filter(User.email == "hospital@gmail.com").first()
+    if not hospital_user:
+        hospital_user = User(
+            full_name="Central Emergency General Hospital",
+            email="hospital@gmail.com",
+            password=hash_password("hospital123"),
+            role="hospital",
+            phone="+1 (555) 019-2831",
+            blood_group="O-",
+            gender="Male",
+            address="450 Healthcare Boulevard, Suite 100",
+            is_available=True
+        )
+        db.add(hospital_user)
+
     db.commit()
 
     # 3. Create Sample Blood Requests
