@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { createRealtimeConnection } from "../services/websocket";
 import "./Home.css";
 
 const INITIAL_SAMPLE_REQUESTS = [
@@ -72,6 +73,23 @@ function Home() {
 
   useEffect(() => {
     fetchEmergencyRequests();
+  }, []);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const cleanup = createRealtimeConnection((message) => {
+      const t = message.type;
+      if (
+        t === "request_created" ||
+        t === "request_updated" ||
+        t === "request_deleted" ||
+        t === "donation_created" ||
+        t === "donation_status_changed"
+      ) {
+        fetchEmergencyRequests();
+      }
+    });
+    return cleanup;
   }, []);
 
   const fetchEmergencyRequests = async () => {
