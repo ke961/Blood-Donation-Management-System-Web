@@ -763,6 +763,7 @@ from ..auth import get_current_admin
 from ..database import get_db
 from ..models import User, BloodRequest, Donation
 from ..schemas import BloodRequestCreate, BloodRequestUpdate, UserRoleUpdate, DonationStatusUpdate
+from ..websocket_manager import manager
 
 router = APIRouter(
     prefix="/admin",
@@ -865,6 +866,8 @@ def update_user(
     db.commit()
     db.refresh(user)
 
+    manager.broadcast_sync("user_updated", {"user_id": user.id, "role": user.role})
+
     return {
         "message": f"User {user.email} updated successfully",
         "user": {
@@ -900,6 +903,8 @@ def delete_user(
 
     db.delete(user)
     db.commit()
+
+    manager.broadcast_sync("user_deleted", {"user_id": user_id})
 
     return {"message": "User deleted successfully"}
 
@@ -968,6 +973,8 @@ def create_blood_request(
     db.commit()
     db.refresh(new_request)
 
+    manager.broadcast_sync("request_created", {"id": new_request.id, "blood_group": new_request.blood_group})
+
     return {
         "message": "Blood request created successfully",
         "request": {
@@ -1012,6 +1019,8 @@ def update_blood_request(
     db.commit()
     db.refresh(req)
 
+    manager.broadcast_sync("request_updated", {"id": req.id, "status": req.status})
+
     return {
         "message": "Blood request updated successfully",
         "request_id": req.id,
@@ -1036,6 +1045,8 @@ def delete_blood_request(
 
     db.delete(req)
     db.commit()
+
+    manager.broadcast_sync("request_deleted", {"id": request_id})
 
     return {"message": "Blood request deleted successfully"}
 
@@ -1109,6 +1120,8 @@ def update_donation_status(
 
     db.commit()
 
+    manager.broadcast_sync("donation_status_changed", {"donation_id": donation.id, "status": donation.status})
+
     return {
         "message": f"Donation status updated to {new_status}",
         "donation_id": donation.id,
@@ -1130,5 +1143,7 @@ def delete_donation(
 
     db.delete(donation)
     db.commit()
+
+    manager.broadcast_sync("donation_deleted", {"donation_id": donation_id})
 
     return {"message": "Donation record deleted successfully"}
