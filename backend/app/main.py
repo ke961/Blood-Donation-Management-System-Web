@@ -41,7 +41,7 @@
 
 
 from typing import Optional
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text, case
 from sqlalchemy.orm import Session
@@ -50,6 +50,7 @@ from .database import engine, SessionLocal, get_db
 from .models import Base, BloodRequest
 from .routers import admin, auth, donor, patient, hospital
 from .utils.create_admin import create_admin
+from .websocket_manager import manager
 
 
 app = FastAPI(
@@ -147,4 +148,17 @@ def get_public_emergency_requests(
         })
 
     return result
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep connection alive; we only use server->client broadcasts
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception:
+        manager.disconnect(websocket)
 
