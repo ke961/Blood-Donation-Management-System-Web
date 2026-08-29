@@ -6,6 +6,7 @@ from ..auth import get_current_user, get_current_hospital
 from ..database import get_db
 from ..models import User, BloodRequest, Donation
 from ..schemas import BloodRequestCreate, BloodRequestUpdate, UserProfileUpdate
+from ..websocket_manager import manager
 
 router = APIRouter(
     prefix="/hospital",
@@ -188,6 +189,8 @@ def create_hospital_request(
     db.commit()
     db.refresh(new_request)
 
+    manager.broadcast_sync("request_created", {"id": new_request.id, "blood_group": new_request.blood_group})
+
     return {
         "message": "Hospital blood request posted successfully!",
         "request": {
@@ -229,6 +232,8 @@ def respond_or_update_request(
     db.commit()
     db.refresh(req)
 
+    manager.broadcast_sync("request_updated", {"id": req.id, "status": req.status})
+
     return {
         "message": f"Blood request status updated to {req.status}",
         "request": {
@@ -257,6 +262,8 @@ def delete_hospital_request(
     db.query(Donation).filter(Donation.request_id == request_id).delete()
     db.delete(req)
     db.commit()
+
+    manager.broadcast_sync("request_deleted", {"id": request_id})
 
     return {"message": "Blood request removed successfully"}
 
@@ -341,6 +348,8 @@ def update_hospital_profile(
 
     db.commit()
     db.refresh(hospital)
+
+    manager.broadcast_sync("profile_updated", {"user_id": hospital.id, "role": "hospital"})
 
     return {
         "message": "Hospital profile updated successfully",
