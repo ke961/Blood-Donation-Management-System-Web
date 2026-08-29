@@ -6,6 +6,7 @@ from ..auth import get_current_user
 from ..database import get_db
 from ..models import User, BloodRequest, Donation
 from ..schemas import BloodRequestCreate, BloodRequestUpdate, UserProfileUpdate
+from ..websocket_manager import manager
 
 router = APIRouter(
     prefix="/patient",
@@ -118,6 +119,8 @@ def create_patient_request(
     db.commit()
     db.refresh(new_request)
 
+    manager.broadcast_sync("request_created", {"id": new_request.id, "blood_group": new_request.blood_group})
+
     return {
         "message": "Blood request submitted successfully!",
         "request": {
@@ -170,6 +173,8 @@ def update_patient_request(
     db.commit()
     db.refresh(req)
 
+    manager.broadcast_sync("request_updated", {"id": req.id, "status": req.status})
+
     return {
         "message": "Blood request updated successfully",
         "request": {
@@ -204,6 +209,8 @@ def delete_patient_request(
     db.query(Donation).filter(Donation.request_id == request_id).delete()
     db.delete(req)
     db.commit()
+
+    manager.broadcast_sync("request_deleted", {"id": request_id})
 
     return {"message": "Blood request deleted successfully"}
 
@@ -287,6 +294,8 @@ def update_patient_profile(
 
     db.commit()
     db.refresh(patient)
+
+    manager.broadcast_sync("profile_updated", {"user_id": patient.id, "role": "patient"})
 
     return {
         "message": "Patient profile updated successfully",
