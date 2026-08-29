@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { createRealtimeConnection } from "../services/websocket";
 import "./HospitalDashboard.css";
 
 function HospitalDashboard() {
@@ -74,6 +75,29 @@ function HospitalDashboard() {
     } else if (activeTab === "profile") {
       fetchProfile();
     }
+  }, [activeTab, donorBloodFilter, queueBloodFilter, queueStatusFilter, hospitalSearch, hospitalBloodFilter]);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const cleanup = createRealtimeConnection((message) => {
+      const t = message.type;
+      if (
+        t === "request_created" ||
+        t === "request_updated" ||
+        t === "request_deleted" ||
+        t === "donation_created" ||
+        t === "donation_status_changed" ||
+        t === "donation_deleted" ||
+        t === "donor_availability_changed"
+      ) {
+        fetchInitialData();
+        if (activeTab === "my-requests") fetchMyRequests();
+        if (activeTab === "patient-queue") fetchAllRequests();
+        if (activeTab === "hospitals") fetchHospitalsNetwork();
+        if (activeTab === "donors") fetchDonors();
+      }
+    });
+    return cleanup;
   }, [activeTab, donorBloodFilter, queueBloodFilter, queueStatusFilter, hospitalSearch, hospitalBloodFilter]);
 
   const showAlert = (message, type = "success") => {
