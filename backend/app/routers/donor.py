@@ -6,6 +6,7 @@ from ..auth import get_current_donor, get_current_user
 from ..database import get_db
 from ..models import User, BloodRequest, Donation
 from ..schemas import UserProfileUpdate, DonationStatusUpdate
+from ..websocket_manager import manager
 
 router = APIRouter(
     prefix="/donor",
@@ -116,6 +117,8 @@ def update_donor_profile(
     db.commit()
     db.refresh(donor)
 
+    manager.broadcast_sync("profile_updated", {"user_id": donor.id, "role": "donor"})
+
     return {
         "message": "Profile updated successfully",
         "user": {
@@ -147,6 +150,8 @@ def toggle_availability(
 
     donor.is_available = is_available
     db.commit()
+
+    manager.broadcast_sync("donor_availability_changed", {"donor_id": donor.id, "is_available": is_available})
 
     return {
         "message": "Availability status updated",
@@ -241,6 +246,8 @@ def donate_for_request(
     db.commit()
     db.refresh(new_donation)
 
+    manager.broadcast_sync("donation_created", {"request_id": request_id, "donor_id": donor_id})
+
     return {
         "message": "Thank you! Your donation offer has been recorded.",
         "donation": {
@@ -323,6 +330,8 @@ def update_donation_status(
         donation.request.status = "Pending"
 
     db.commit()
+
+    manager.broadcast_sync("donation_status_changed", {"donation_id": donation.id, "status": donation.status})
 
     return {
         "message": f"Donation status updated to {new_status}",
