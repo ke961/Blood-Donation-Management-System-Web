@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { createRealtimeConnection } from "../services/websocket";
 import "./DonorDashboard.css";
 
 function DonorDashboard() {
@@ -47,6 +48,27 @@ function DonorDashboard() {
     } else if (activeTab === "profile") {
       fetchProfile();
     }
+  }, [activeTab, filterBloodGroup]);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const cleanup = createRealtimeConnection((message) => {
+      const t = message.type;
+      if (
+        t === "request_created" ||
+        t === "request_updated" ||
+        t === "request_deleted" ||
+        t === "donation_created" ||
+        t === "donation_status_changed" ||
+        t === "donation_deleted" ||
+        t === "donor_availability_changed"
+      ) {
+        fetchDashboardData();
+        if (activeTab === "requests") fetchRequests();
+        if (activeTab === "donations") fetchMyDonations();
+      }
+    });
+    return cleanup;
   }, [activeTab, filterBloodGroup]);
 
   const showAlert = (message, type = "success") => {
