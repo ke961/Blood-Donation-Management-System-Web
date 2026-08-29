@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { createRealtimeConnection } from "../services/websocket";
 import "./PatientDashboard.css";
 
 function PatientDashboard() {
@@ -68,6 +69,28 @@ function PatientDashboard() {
     } else if (activeTab === "profile") {
       fetchProfile();
     }
+  }, [activeTab, bloodFilter, hospitalSearch, hospitalBloodFilter]);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const cleanup = createRealtimeConnection((message) => {
+      const t = message.type;
+      if (
+        t === "request_created" ||
+        t === "request_updated" ||
+        t === "request_deleted" ||
+        t === "donation_created" ||
+        t === "donation_status_changed" ||
+        t === "donation_deleted" ||
+        t === "donor_availability_changed"
+      ) {
+        fetchInitialData();
+        if (activeTab === "requests") fetchMyRequests();
+        if (activeTab === "donors") fetchDonors();
+        if (activeTab === "hospitals") fetchHospitals();
+      }
+    });
+    return cleanup;
   }, [activeTab, bloodFilter, hospitalSearch, hospitalBloodFilter]);
 
   const showAlert = (message, type = "success") => {
