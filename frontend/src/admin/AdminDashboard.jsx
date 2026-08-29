@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { createRealtimeConnection } from "../services/websocket";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
@@ -51,6 +52,18 @@ function AdminDashboard() {
     if (activeTab === "users") loadUsers();
     else if (activeTab === "requests") loadRequests();
     else if (activeTab === "donations") loadDonations();
+  }, [activeTab, roleFilter, statusFilter]);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const cleanup = createRealtimeConnection((message) => {
+      // Refresh everything on any database change since admin sees all data
+      loadDashboardStats();
+      if (activeTab === "users") loadUsers();
+      if (activeTab === "requests") loadRequests();
+      if (activeTab === "donations") loadDonations();
+    });
+    return cleanup;
   }, [activeTab, roleFilter, statusFilter]);
 
   const showAlert = (message, type = "success") => {
