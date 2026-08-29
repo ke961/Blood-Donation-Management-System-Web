@@ -2,6 +2,7 @@
   "name": "blood-donation-management-system",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "postinstall": "cd frontend && npm install",
     "build": "cd frontend && npm install && npm run build"
