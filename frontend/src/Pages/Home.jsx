@@ -498,15 +498,8 @@ function Home() {
         </div>
       )}
 
-      <footer className="home-footer">
-        <div className="footer-content">
-          <p>© 2026 LifeFlow Blood Donation Management System. All rights reserved.</p>
-          <div className="footer-links">
-            <span onClick={() => navigate("/login")}>Login</span>
-            <span>•</span>
-            <span onClick={() => navigate("/register")}>Register</span>
-          </div>
-        </div>
+      <footer style={{ width: "100%", textAlign: "center", padding: "2rem 0", opacity: 0.5, fontSize: "0.85rem" }}>
+        <p>© 2026 LifeFlow Blood Donation Management System. All rights reserved.</p>
       </footer>
     </div>
   );
